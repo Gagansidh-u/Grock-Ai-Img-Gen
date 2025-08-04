@@ -36,7 +36,7 @@ const GenerateImageOutputSchema = z.object({
 export type GenerateImageOutput = z.infer<typeof GenerateImageOutputSchema>;
 
 export async function generateImage(
-  input: GenerateImageInput
+  input: GenerateImage.Input
 ): Promise<GenerateImageOutput> {
   return generateImageFlow(input);
 }
@@ -57,9 +57,9 @@ const generateImageFlow = ai.defineFlow(
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
 
       prompt: modifiedPrompt,
+      aspectRatio: input.aspectRatio,
       config: {
         responseModalities: ['TEXT', 'IMAGE'], // MUST provide both TEXT and IMAGE, IMAGE only won't work
-        aspectRatio: input.aspectRatio,
         safetySettings: [
           {
             category: 'HARM_CATEGORY_HATE_SPEECH',
