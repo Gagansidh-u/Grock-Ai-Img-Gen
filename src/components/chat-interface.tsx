@@ -5,24 +5,17 @@ import { useChatHandler } from "@/hooks/use-chat-handler";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { ChatMessages } from "@/components/chat-messages";
 import { ChatInputArea } from "@/components/chat-input-area";
-import { useSettings } from "./settings-provider";
 
 export function ChatInterface() {
-  const { voice } = useSettings();
   const {
     messages,
     input,
     setInput,
     handleSend,
     isLoading,
-    voiceOutputEnabled,
-    toggleVoiceOutput,
-    audioRef,
     attachedFile,
     setAttachedFile,
-  } = useChatHandler({
-    voice,
-  });
+  } = useChatHandler();
 
   const {
     isRecording,
@@ -39,7 +32,6 @@ export function ChatInterface() {
 
   return (
     <div className="flex flex-col h-full flex-1">
-      <audio ref={audioRef} className="hidden" />
       <ChatMessages messages={messages} isLoading={isLoading} />
       <ChatInputArea
         input={input}
@@ -49,8 +41,6 @@ export function ChatInterface() {
         isRecording={isRecording}
         startRecording={startRecognition}
         stopRecording={stopRecognition}
-        voiceOutputEnabled={voiceOutputEnabled}
-        toggleVoiceOutput={toggleVoiceOutput}
         attachedFile={attachedFile}
         setAttachedFile={setAttachedFile}
       />

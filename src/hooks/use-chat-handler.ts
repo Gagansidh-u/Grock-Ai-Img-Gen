@@ -1,34 +1,20 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import type { Message } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { fileToDataUri } from "@/lib/utils";
 import { identityDisclosure } from "@/ai/flows/identity-disclosure";
 import { generateImage } from "@/ai/flows/generate-image";
 import { analyzeMedia } from "@/ai/flows/analyze-media";
-import { voiceConversation } from "@/ai/flows/voice-conversation";
 
-type ChatHandlerOptions = {
-  voice?: string;
-};
-
-export function useChatHandler({ voice = 'Algenib' }: ChatHandlerOptions = {}) {
+export function useChatHandler() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(true);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   
-  const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
-
-  const playAudio = useCallback((dataUri: string) => {
-    if (audioRef.current) {
-      audioRef.current.src = dataUri;
-      audioRef.current.play().catch(e => console.error("Audio playback failed", e));
-    }
-  }, []);
 
   const handleSend = useCallback(async (userMessageText: string) => {
     if (isLoading) return;
@@ -56,10 +42,6 @@ export function useChatHandler({ voice = 'Algenib' }: ChatHandlerOptions = {}) {
           role: "assistant",
           content: response.answer,
         };
-        if (voiceOutputEnabled) {
-          const audioResponse = await voiceConversation({ query: response.answer, voice });
-          playAudio(audioResponse.media);
-        }
 
       } else if (/^(generate|create|draw|make an image of)/i.test(userMessageText)) {
         const response = await generateImage({ prompt: userMessageText });
@@ -77,10 +59,6 @@ export function useChatHandler({ voice = 'Algenib' }: ChatHandlerOptions = {}) {
           role: "assistant",
           content: response.response,
         };
-        if (voiceOutputEnabled) {
-          const audioResponse = await voiceConversation({ query: response.response, voice });
-          playAudio(audioResponse.media);
-        }
       }
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -96,11 +74,7 @@ export function useChatHandler({ voice = 'Algenib' }: ChatHandlerOptions = {}) {
       setIsLoading(false);
       setAttachedFile(null);
     }
-  }, [isLoading, attachedFile, voiceOutputEnabled, toast, playAudio, voice]);
-
-  const toggleVoiceOutput = useCallback(() => {
-    setVoiceOutputEnabled(prev => !prev);
-  }, []);
+  }, [isLoading, attachedFile, toast]);
 
   return {
     messages,
@@ -108,9 +82,6 @@ export function useChatHandler({ voice = 'Algenib' }: ChatHandlerOptions = {}) {
     setInput,
     handleSend,
     isLoading,
-    voiceOutputEnabled,
-    toggleVoiceOutput,
-    audioRef,
     attachedFile,
     setAttachedFile,
   };

@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { SendHorizontal, Paperclip, Mic, MicOff, Volume2, VolumeX, X } from "lucide-react";
+import { SendHorizontal, Paperclip, Mic, MicOff, X } from "lucide-react";
 
 type ChatInputAreaProps = {
   input: string;
@@ -14,8 +14,6 @@ type ChatInputAreaProps = {
   isRecording: boolean;
   startRecording: () => void;
   stopRecording: () => void;
-  voiceOutputEnabled: boolean;
-  toggleVoiceOutput: () => void;
   attachedFile: File | null;
   setAttachedFile: (file: File | null) => void;
 };
@@ -28,8 +26,6 @@ export function ChatInputArea({
   isRecording,
   startRecording,
   stopRecording,
-  voiceOutputEnabled,
-  toggleVoiceOutput,
   attachedFile,
   setAttachedFile,
 }: ChatInputAreaProps) {
@@ -133,15 +129,6 @@ export function ChatInputArea({
               className="text-muted-foreground hover:text-foreground rounded-full"
             >
               {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleVoiceOutput}
-              aria-label={voiceOutputEnabled ? "Disable voice output" : "Enable voice output"}
-              className="text-muted-foreground hover:text-foreground rounded-full"
-            >
-              {voiceOutputEnabled ? <Volume2 className="h-5 w-5 text-primary" /> : <VolumeX className="h-5 w-5" />}
             </Button>
           </div>
           <input
