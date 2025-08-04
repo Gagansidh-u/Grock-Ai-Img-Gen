@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useEffect } from 'react';
 import Image from 'next/image';
 import { Header } from '@/components/header';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,7 @@ export default function Home() {
   const [isGenerating, startGenerationTransition] = useTransition();
   const [isSuggesting, startSuggestionTransition] = useTransition();
   const { toast } = useToast();
+  const [initialRenderComplete, setInitialRenderComplete] = useState(false);
 
   const handleGenerate = () => {
     if (!prompt.trim()) {
@@ -50,6 +51,17 @@ export default function Home() {
       }
     });
   };
+
+  useEffect(() => {
+    if (initialRenderComplete) {
+      if (prompt.trim() && generatedImages.length > 0) {
+        handleGenerate();
+      }
+    } else {
+      setInitialRenderComplete(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aspectRatio]);
 
   const handleSuggestPrompt = () => {
     startSuggestionTransition(async () => {
@@ -177,7 +189,7 @@ export default function Home() {
                           src={image}
                           alt={prompt}
                           fill
-                          className="object-contain"
+                          className="object-cover"
                           sizes="(max-width: 768px) 100vw, 50vw"
                         />
                         <a
