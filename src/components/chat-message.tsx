@@ -5,7 +5,8 @@ import type { Message } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { GrockLogo } from "@/components/icons";
-import { User } from "lucide-react";
+import { User, Download } from "lucide-react";
+import { Button } from "./ui/button";
 
 type ChatMessageProps = {
   message: Message;
@@ -23,6 +24,33 @@ const LoadingBubble = () => (
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === "user";
+
+  const renderMedia = () => {
+    const downloadFilename = message.type === 'image' ? 'grock-generated-image.png' : 'grock-generated-video.mp4';
+    return (
+      <div className="relative group">
+        {message.type === 'image' && (
+          <Image
+            src={message.content as string}
+            alt="Generated image"
+            width={400}
+            height={400}
+            className="rounded-lg"
+            priority
+          />
+        )}
+        <a
+          href={message.content as string}
+          download={downloadFilename}
+          className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/50 backdrop-blur-sm rounded-full"
+        >
+          <Button variant="secondary" size="icon" className="rounded-full h-9 w-9">
+            <Download className="h-4 w-4" />
+          </Button>
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -47,23 +75,19 @@ export function ChatMessage({ message }: ChatMessageProps) {
       >
         <div
           className={cn(
-            "rounded-2xl px-4 py-3",
+            "rounded-2xl",
             isUser
               ? "bg-primary text-primary-foreground rounded-br-none"
-              : "bg-secondary rounded-bl-none"
+              : "bg-secondary rounded-bl-none",
+            message.type === 'image' ? 'p-0 overflow-hidden' : 'px-4 py-3',
           )}
         >
           {message.type === 'loading' ? (
-            <LoadingBubble />
+            <div className="px-4 py-3">
+              <LoadingBubble />
+            </div>
           ) : message.type === 'image' ? (
-            <Image
-              src={message.content as string}
-              alt="Generated image"
-              width={400}
-              height={400}
-              className="rounded-lg"
-              priority
-            />
+            renderMedia()
           ) : (
             <div className="prose prose-sm prose-p:text-current prose-strong:text-current prose-headings:text-current dark:prose-invert text-current break-words">
               {message.content}
