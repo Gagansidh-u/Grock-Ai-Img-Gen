@@ -9,7 +9,11 @@ import { generateImage } from "@/ai/flows/generate-image";
 import { analyzeMedia } from "@/ai/flows/analyze-media";
 import { voiceConversation } from "@/ai/flows/voice-conversation";
 
-export function useChatHandler() {
+type ChatHandlerOptions = {
+  voice?: string;
+};
+
+export function useChatHandler({ voice = 'Algenib' }: ChatHandlerOptions = {}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +57,7 @@ export function useChatHandler() {
           content: response.answer,
         };
         if (voiceOutputEnabled) {
-          const audioResponse = await voiceConversation(response.answer);
+          const audioResponse = await voiceConversation({ query: response.answer, voice });
           playAudio(audioResponse.media);
         }
 
@@ -74,7 +78,7 @@ export function useChatHandler() {
           content: response.response,
         };
         if (voiceOutputEnabled) {
-          const audioResponse = await voiceConversation(response.response);
+          const audioResponse = await voiceConversation({ query: response.response, voice });
           playAudio(audioResponse.media);
         }
       }
@@ -92,7 +96,7 @@ export function useChatHandler() {
       setIsLoading(false);
       setAttachedFile(null);
     }
-  }, [isLoading, attachedFile, voiceOutputEnabled, toast, playAudio]);
+  }, [isLoading, attachedFile, voiceOutputEnabled, toast, playAudio, voice]);
 
   const toggleVoiceOutput = useCallback(() => {
     setVoiceOutputEnabled(prev => !prev);

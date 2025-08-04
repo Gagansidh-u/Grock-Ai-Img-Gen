@@ -5,8 +5,11 @@ import { useChatHandler } from "@/hooks/use-chat-handler";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { ChatMessages } from "@/components/chat-messages";
 import { ChatInputArea } from "@/components/chat-input-area";
+import { SettingsSidebar } from "@/components/settings-sidebar";
+import { useSettings } from "./settings-provider";
 
 export function ChatInterface() {
+  const { voice, setVoice } = useSettings();
   const {
     messages,
     input,
@@ -18,7 +21,9 @@ export function ChatInterface() {
     audioRef,
     attachedFile,
     setAttachedFile,
-  } = useChatHandler();
+  } = useChatHandler({
+    voice,
+  });
 
   const {
     isRecording,
@@ -34,22 +39,25 @@ export function ChatInterface() {
   }, [transcript, setInput]);
 
   return (
-    <div className="flex flex-col h-full">
-      <audio ref={audioRef} className="hidden" />
-      <ChatMessages messages={messages} isLoading={isLoading} />
-      <ChatInputArea
-        input={input}
-        setInput={setInput}
-        onSend={handleSend}
-        isLoading={isLoading}
-        isRecording={isRecording}
-        startRecording={startRecognition}
-        stopRecording={stopRecognition}
-        voiceOutputEnabled={voiceOutputEnabled}
-        toggleVoiceOutput={toggleVoiceOutput}
-        attachedFile={attachedFile}
-        setAttachedFile={setAttachedFile}
-      />
+    <div className="flex h-full">
+      <div className="flex flex-col h-full flex-1">
+        <audio ref={audioRef} className="hidden" />
+        <ChatMessages messages={messages} isLoading={isLoading} />
+        <ChatInputArea
+          input={input}
+          setInput={setInput}
+          onSend={handleSend}
+          isLoading={isLoading}
+          isRecording={isRecording}
+          startRecording={startRecognition}
+          stopRecording={stopRecognition}
+          voiceOutputEnabled={voiceOutputEnabled}
+          toggleVoiceOutput={toggleVoiceOutput}
+          attachedFile={attachedFile}
+          setAttachedFile={setAttachedFile}
+        />
+      </div>
+      <SettingsSidebar selectedVoice={voice} onVoiceChange={setVoice} />
     </div>
   );
 }

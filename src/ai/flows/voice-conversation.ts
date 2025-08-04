@@ -12,7 +12,10 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import wav from 'wav';
 
-const VoiceConversationInputSchema = z.string().describe('The text query for the voice conversation.');
+const VoiceConversationInputSchema = z.object({
+  query: z.string().describe('The text query for the voice conversation.'),
+  voice: z.string().optional().default('Algenib').describe('The voice to use for the conversation.'),
+});
 export type VoiceConversationInput = z.infer<typeof VoiceConversationInputSchema>;
 
 const VoiceConversationOutputSchema = z.object({
@@ -30,14 +33,14 @@ const voiceConversationFlow = ai.defineFlow(
     inputSchema: VoiceConversationInputSchema,
     outputSchema: VoiceConversationOutputSchema,
   },
-  async (query) => {
+  async ({ query, voice }) => {
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.5-flash-preview-tts',
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: {voiceName: 'Algenib'},
+            prebuiltVoiceConfig: {voiceName: voice || 'Algenib'},
           },
         },
       },
@@ -82,4 +85,3 @@ async function toWav(
     writer.end();
   });
 }
-
