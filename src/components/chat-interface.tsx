@@ -8,7 +8,7 @@ import { ChatInputArea } from "@/components/chat-input-area";
 import { useSettings } from "./settings-provider";
 
 export function ChatInterface() {
-  const { voice, setVoice } = useSettings();
+  const { voice } = useSettings();
   const {
     messages,
     input,
@@ -53,8 +53,6 @@ export function ChatInterface() {
         toggleVoiceOutput={toggleVoiceOutput}
         attachedFile={attachedFile}
         setAttachedFile={setAttachedFile}
-        voice={voice}
-        onVoiceChange={setVoice}
       />
     </div>
   );

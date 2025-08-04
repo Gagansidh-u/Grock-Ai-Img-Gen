@@ -5,14 +5,6 @@ import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SendHorizontal, Paperclip, Mic, MicOff, Volume2, VolumeX, X } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { voices } from "@/lib/voices";
 
 type ChatInputAreaProps = {
   input: string;
@@ -26,8 +18,6 @@ type ChatInputAreaProps = {
   toggleVoiceOutput: () => void;
   attachedFile: File | null;
   setAttachedFile: (file: File | null) => void;
-  voice: string;
-  onVoiceChange: (voice: string) => void;
 };
 
 export function ChatInputArea({
@@ -42,8 +32,6 @@ export function ChatInputArea({
   toggleVoiceOutput,
   attachedFile,
   setAttachedFile,
-  voice,
-  onVoiceChange,
 }: ChatInputAreaProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -136,17 +124,6 @@ export function ChatInputArea({
               </div>
             </div>
             
-            <Select value={voice} onValueChange={onVoiceChange}>
-              <SelectTrigger className="w-[150px] bg-muted/30 border-border/80 rounded-full">
-                <SelectValue placeholder="Select a voice" />
-              </SelectTrigger>
-              <SelectContent>
-                {voices.map((v) => (
-                  <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
             <Button
               variant={isRecording ? 'destructive' : 'ghost'}
               size="icon"

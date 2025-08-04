@@ -1,4 +1,5 @@
 import { GrockLogo } from "@/components/icons";
+import { VoiceSelector } from "./voice-selector";
 
 export function Header() {
   return (
@@ -13,6 +14,7 @@ export function Header() {
               Grock AI
             </h1>
           </div>
+          <VoiceSelector />
         </div>
       </div>
     </header>
