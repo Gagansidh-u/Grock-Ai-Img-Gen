@@ -25,17 +25,6 @@ export async function identityDisclosure(input: IdentityDisclosureInput): Promis
   return identityDisclosureFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'identityDisclosurePrompt',
-  input: {schema: IdentityDisclosureInputSchema},
-  output: {schema: IdentityDisclosureOutputSchema},
-  prompt: `{{#if (or (eq (toLowerCase query) \"who are you\") (eq (toLowerCase query) \"who made you\"))}}
-I am Grock AI Created By Grock Technologies Wich Is owned whe Gagan Sidhu
-{{else}}
-{{query}}
-{{/if}}`,
-});
-
 const identityDisclosureFlow = ai.defineFlow(
   {
     name: 'identityDisclosureFlow',
@@ -43,9 +32,17 @@ const identityDisclosureFlow = ai.defineFlow(
     outputSchema: IdentityDisclosureOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const lowerCaseQuery = input.query.toLowerCase();
+    if (lowerCaseQuery === 'who are you' || lowerCaseQuery === 'who made you') {
+      return {
+        response: 'I am Grock AI Created By Grock Technologies Wich Is owned whe Gagan Sidhu',
+      };
+    }
+    const {output} = await ai.generate({
+      prompt: input.query,
+    });
     return {
-      response: output!.response,
+      response: output.text,
     };
   }
 );
