@@ -23,20 +23,29 @@ const GenerateImageInputSchema = z.object({
     .string()
     .optional()
     .describe('The aspect ratio of the image to generate.'),
+  numberOfImages: z
+    .number()
+    .min(1)
+    .max(4)
+    .optional()
+    .default(1)
+    .describe('The number of images to generate.'),
 });
 export type GenerateImageInput = z.infer<typeof GenerateImageInputSchema>;
 
 const GenerateImageOutputSchema = z.object({
-  image: z
-    .string()
-    .describe(
-      'The generated image as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.'
-    ),
+  images: z
+    .array(
+      z.string().describe(
+        'The generated image as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.'
+      )
+    )
+    .describe('An array of generated image data URIs.'),
 });
 export type GenerateImageOutput = z.infer<typeof GenerateImageOutputSchema>;
 
 export async function generateImage(
-  input: GenerateImage.Input
+  input: GenerateImageInput
 ): Promise<GenerateImageOutput> {
   return generateImageFlow(input);
 }
@@ -52,35 +61,38 @@ const generateImageFlow = ai.defineFlow(
     const stylePrompt = styleInfo ? styleInfo.prompt : '';
     const modifiedPrompt = `${stylePrompt}, ${input.prompt}`;
 
-    const {media} = await ai.generate({
-      // IMPORTANT: ONLY the googleai/gemini-2.0-flash-preview-image-generation model is able to generate images. You MUST use exactly this model to generate images.
-      model: 'googleai/gemini-2.0-flash-preview-image-generation',
-
-      prompt: modifiedPrompt,
-      aspectRatio: input.aspectRatio,
-      config: {
-        responseModalities: ['TEXT', 'IMAGE'], // MUST provide both TEXT and IMAGE, IMAGE only won't work
-        safetySettings: [
-          {
-            category: 'HARM_CATEGORY_HATE_SPEECH',
-            threshold: 'BLOCK_NONE',
-          },
-          {
-            category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-            threshold: 'BLOCK_NONE',
-          },
-          {
-            category: 'HARM_CATEGORY_HARASSMENT',
-            threshold: 'BLOCK_NONE',
-          },
-          {
-            category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-            threshold: 'BLOCK_NONE',
-          },
+    const generationPromises = Array.from({ length: input.numberOfImages }).map(async () => {
+        const {media} = await ai.generate({
+          model: 'googleai/gemini-2.0-flash-preview-image-generation',
+          prompt: modifiedPrompt,
+          config: {
+            responseModalities: ['TEXT', 'IMAGE'],
+             safetySettings: [
+                {
+                    category: 'HARM_CATEGORY_HATE_SPEECH',
+                    threshold: 'BLOCK_NONE',
+                },
+                {
+                    category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                    threshold: 'BLOCK_NONE',
+                },
+                {
+                    category: 'HARM_CATEGORY_HARASSMENT',
+                    threshold: 'BLOCK_NONE',
+                },
+                {
+                    category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                    threshold: 'BLOCK_NONE',
+                },
         ],
-      },
-    });
+          },
+        });
+        return media.url!;
+      }
+    );
 
-    return {image: media.url!};
+    const images = await Promise.all(generationPromises);
+
+    return {images};
   }
 );
