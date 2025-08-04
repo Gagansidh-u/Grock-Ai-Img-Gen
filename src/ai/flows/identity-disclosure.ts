@@ -38,11 +38,11 @@ const identityDisclosureFlow = ai.defineFlow(
         response: 'I am Grock AI Created By Grock Technologies Wich Is owned whe Gagan Sidhu',
       };
     }
-    const {output} = await ai.generate({
+    const response = await ai.generate({
       prompt: input.query,
     });
     return {
-      response: output.text,
+      response: response.text,
     };
   }
 );
