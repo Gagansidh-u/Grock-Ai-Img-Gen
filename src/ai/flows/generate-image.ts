@@ -11,9 +11,18 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {STYLES} from '@/lib/options';
 
 const GenerateImageInputSchema = z.object({
   prompt: z.string().describe('The text prompt to use to generate the image.'),
+  style: z
+    .string()
+    .optional()
+    .describe('The artistic style of the image to generate.'),
+  aspectRatio: z
+    .string()
+    .optional()
+    .describe('The aspect ratio of the image to generate.'),
 });
 export type GenerateImageInput = z.infer<typeof GenerateImageInputSchema>;
 
@@ -21,12 +30,14 @@ const GenerateImageOutputSchema = z.object({
   image: z
     .string()
     .describe(
-      'The generated image as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' 
+      'The generated image as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.'
     ),
 });
 export type GenerateImageOutput = z.infer<typeof GenerateImageOutputSchema>;
 
-export async function generateImage(input: GenerateImageInput): Promise<GenerateImageOutput> {
+export async function generateImage(
+  input: GenerateImageInput
+): Promise<GenerateImageOutput> {
   return generateImageFlow(input);
 }
 
@@ -36,9 +47,10 @@ const generateImageFlow = ai.defineFlow(
     inputSchema: GenerateImageInputSchema,
     outputSchema: GenerateImageOutputSchema,
   },
-  async input => {
-    // Add a prefix to the prompt to help avoid safety filters
-    const modifiedPrompt = `A sticker of a cartoon character: ${input.prompt}`;
+  async (input) => {
+    const styleInfo = STYLES.find((s) => s.value === input.style);
+    const stylePrompt = styleInfo ? styleInfo.prompt : '';
+    const modifiedPrompt = `${stylePrompt}, ${input.prompt}`;
 
     const {media} = await ai.generate({
       // IMPORTANT: ONLY the googleai/gemini-2.0-flash-preview-image-generation model is able to generate images. You MUST use exactly this model to generate images.
@@ -47,6 +59,7 @@ const generateImageFlow = ai.defineFlow(
       prompt: modifiedPrompt,
       config: {
         responseModalities: ['TEXT', 'IMAGE'], // MUST provide both TEXT and IMAGE, IMAGE only won't work
+        aspectRatio: input.aspectRatio,
         safetySettings: [
           {
             category: 'HARM_CATEGORY_HATE_SPEECH',
