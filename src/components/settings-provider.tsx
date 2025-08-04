@@ -10,7 +10,7 @@ type SettingsContextType = {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
-  const [voice, setVoice] = useState('Algenib');
+  const [voice, setVoice] = useState('algenib');
 
   const value = {
     voice,

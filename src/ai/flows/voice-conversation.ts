@@ -14,7 +14,7 @@ import wav from 'wav';
 
 const VoiceConversationInputSchema = z.object({
   query: z.string().describe('The text query for the voice conversation.'),
-  voice: z.string().optional().default('Algenib').describe('The voice to use for the conversation.'),
+  voice: z.string().optional().default('algenib').describe('The voice to use for the conversation.'),
 });
 export type VoiceConversationInput = z.infer<typeof VoiceConversationInputSchema>;
 
@@ -40,7 +40,7 @@ const voiceConversationFlow = ai.defineFlow(
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: {voiceName: voice || 'Algenib'},
+            prebuiltVoiceConfig: {voiceName: voice || 'algenib'},
           },
         },
       },
