@@ -3,7 +3,7 @@ import { ChatInterface } from "@/components/chat-interface";
 
 export default function Home() {
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background/80 backdrop-blur-3xl">
       <Header />
       <main className="flex-1 overflow-hidden">
         <ChatInterface />
