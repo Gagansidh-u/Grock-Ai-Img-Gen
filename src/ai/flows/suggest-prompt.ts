@@ -26,7 +26,7 @@ const suggestPromptFlow = ai.defineFlow(
     outputSchema: SuggestPromptOutputSchema,
   },
   async () => {
-    const {output} = await ai.generate({
+    const {text} = await ai.generate({
       prompt: 'Generate a short, creative, and inspiring prompt for an image generation AI. The prompt should be a single sentence and be suitable for creating visually stunning and imaginative artwork. Do not include any quotation marks.',
       model: 'googleai/gemini-2.0-flash',
       config: {
@@ -34,6 +34,6 @@ const suggestPromptFlow = ai.defineFlow(
       },
     });
 
-    return {prompt: output as string};
+    return {prompt: text};
   }
 );
