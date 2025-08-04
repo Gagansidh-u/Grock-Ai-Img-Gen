@@ -5,7 +5,7 @@ import { SettingsProvider } from "@/components/settings-provider";
 export default function Home() {
   return (
     <SettingsProvider>
-      <div className="flex flex-col h-screen bg-background/80 backdrop-blur-3xl">
+      <div className="flex flex-col h-screen bg-background">
         <Header />
         <main className="flex-1 overflow-hidden">
           <ChatInterface />

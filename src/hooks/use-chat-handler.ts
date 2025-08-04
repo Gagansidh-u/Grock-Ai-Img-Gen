@@ -17,7 +17,7 @@ export function useChatHandler({ voice = 'Algenib' }: ChatHandlerOptions = {}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(false);
+  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(true);
   const [attachedFile, setAttachedFile] = useState<File | null>(null);
   
   const audioRef = useRef<HTMLAudioElement>(null);

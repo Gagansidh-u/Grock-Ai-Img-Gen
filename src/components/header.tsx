@@ -1,5 +1,4 @@
 import { GrockLogo } from "@/components/icons";
-import { SettingsToggle } from "./settings-toggle";
 
 export function Header() {
   return (
@@ -14,7 +13,6 @@ export function Header() {
               Grock AI
             </h1>
           </div>
-          <SettingsToggle />
         </div>
       </div>
     </header>

@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
 
     --card: 240 10% 3.9%;
@@ -42,7 +42,7 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 0 0% 0%;
     --foreground: 0 0% 98%;
 
     --card: 240 10% 3.9%;
@@ -78,9 +78,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: radial-gradient(circle at top left, hsl(var(--primary) / 0.1), transparent 40%),
-                radial-gradient(circle at bottom right, hsl(280 100% 50% / 0.1), transparent 40%);
-
   }
 }
 
