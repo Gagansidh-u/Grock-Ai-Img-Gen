@@ -1,17 +1,16 @@
-
 "use client";
 
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: "Please enter your name." }),
@@ -91,7 +90,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
         <DialogContent className="sm:max-w-md p-0">
              <Card className="w-full border-none shadow-none">
                 <DialogHeader className="p-6 pb-2">
-                    <CardTitle className="text-2xl text-center">{authMode === 'signin' ? 'Welcome Back' : 'Create an Account'}</CardTitle>
+                    <DialogTitle className="text-2xl text-center">{authMode === 'signin' ? 'Welcome Back' : 'Create an Account'}</DialogTitle>
                     <CardDescription className="text-center">
                       {authMode === 'signin' 
                         ? 'Sign in to continue to TryQuad AI.' 
