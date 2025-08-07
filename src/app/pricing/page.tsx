@@ -18,7 +18,7 @@ import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, 
 import useRazorpay from "react-razorpay";
 import { createOrder } from '@/lib/razorpay';
 import { useToast } from '@/hooks/use-toast';
-import { updateUserPlan } from '@/lib/firestore';
+import { updateUserPlan, UserProfile } from '@/lib/firestore';
 
 
 const plans = [
@@ -104,7 +104,7 @@ export default function PricingPage() {
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-        amount: order.amount,
+        amount: order.amount.toString(),
         currency: order.currency,
         name: "Grock AI",
         description: `Payment for ${plan.name} Plan`,
@@ -260,7 +260,7 @@ export default function PricingPage() {
                       <CardFooter>
                         <Button
                           className="w-full"
-                          disabled={userData?.plan === plan.name || isProcessing === plan.name}
+                          disabled={userData?.plan === plan.name || !!isProcessing}
                           variant={plan.isPrimary ? 'default' : 'secondary'}
                           onClick={() => handlePayment(plan)}
                         >
@@ -280,3 +280,5 @@ export default function PricingPage() {
     </SidebarProvider>
   )
 }
+
+    
