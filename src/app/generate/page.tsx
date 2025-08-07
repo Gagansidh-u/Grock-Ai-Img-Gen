@@ -299,7 +299,7 @@ export default function GeneratorPage() {
                     size="lg"
                     className="rounded-full font-semibold w-full sm:w-auto"
                   >
-                    <Sparkles className="h-4 w-4 mr-2" />
+                    {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
                     {isGenerating ? 'Generating...' : 'Generate'}
                   </Button>
                 </div>

@@ -71,20 +71,32 @@ const generateImageFlow = ai.defineFlow(
     const styleInfo = STYLES.find((s) => s.value === input.style);
     const stylePrompt = styleInfo ? styleInfo.prompt : '';
     
-    // Combine style and user prompt, ensuring clean output.
     const modifiedPrompt = [stylePrompt, input.prompt.trim()].filter(Boolean).join(', ');
 
-    const promptPayload: (string | { media: { url: string } })[] = [];
-    
+    const promptPayload: ({ text: string } | { media: { url: string } })[] = [];
+
+    // Add text prompt if it exists
     if (modifiedPrompt) {
-        promptPayload.push(modifiedPrompt);
+      promptPayload.push({ text: modifiedPrompt });
+    } else {
+      // If no text prompt, add a default one when reference images are present
+      if (input.referenceImages && input.referenceImages.length > 0) {
+        promptPayload.push({ text: 'Generate an image based on the reference image.' });
+      }
     }
 
+    // Add reference images
     if (input.referenceImages && input.referenceImages.length > 0) {
       input.referenceImages.forEach((url) => {
-        promptPayload.push({media: {url}});
+        promptPayload.push({ media: { url } });
       });
     }
+
+    // If payload is empty, something went wrong.
+    if (promptPayload.length === 0) {
+        throw new Error("A prompt or reference image is required.");
+    }
+
 
     const generationPromises = Array.from({
       length: input.numberOfImages || 1,
