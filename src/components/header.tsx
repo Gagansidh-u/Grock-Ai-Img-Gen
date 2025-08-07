@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { TryQuadLogo } from "@/components/icons";
 import { SidebarTrigger } from "./ui/sidebar";
@@ -10,17 +11,20 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
             <SidebarTrigger className="md:hidden" />
-            <Link href="/" className="hidden md:flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
                 <TryQuadLogo className="h-7 w-7 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold text-foreground tracking-tighter">
+              <h1 className="text-2xl font-bold text-foreground tracking-tighter hidden sm:block">
                 TryQuad AI
               </h1>
             </Link>
           </div>
           <div className="hidden md:block">
             <AuthButton />
+          </div>
+           <div className="md:hidden">
+            <SidebarTrigger />
           </div>
         </div>
       </div>

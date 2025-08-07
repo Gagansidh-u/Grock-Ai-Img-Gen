@@ -26,6 +26,7 @@ import { updateImageCount } from '@/lib/firestore';
 import { AuthButton } from '@/components/auth-button';
 import { motion } from 'framer-motion';
 import { CreditUsage } from '@/components/credit-usage';
+import { Header } from '@/components/header';
 
 
 export default function GeneratorPage() {
@@ -209,18 +210,7 @@ export default function GeneratorPage() {
       </Sidebar>
       <SidebarInset>
         <div className="flex flex-col min-h-screen bg-background">
-          <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
-              <div className="container mx-auto px-4">
-                <div className="flex items-center justify-between h-16">
-                  <Link href="/" className="flex items-center gap-3">
-                    <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                      <TryQuadLogo className="h-7 w-7 text-primary" />
-                    </div>
-                  </Link>
-                  <SidebarTrigger />
-                </div>
-              </div>
-          </header>
+           <Header />
           <main className="flex-1 flex flex-col items-center p-4 md:p-6">
             <motion.div 
               className="container mx-auto max-w-6xl w-full"
