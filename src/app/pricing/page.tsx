@@ -18,6 +18,7 @@ import { createOrder } from '@/lib/razorpay';
 import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/header';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
+import useRazorpay from 'react-razorpay';
 
 
 const plans = [
@@ -38,7 +39,7 @@ const plans = [
         name: 'Basic',
         price: 12,
         pricePeriod: '/ month',
-        description: 'For hobbyists and frequent users.',
+        description: '100 image credits.',
         features: [
             '100 image credits per month',
             'Standard image quality',
@@ -52,7 +53,7 @@ const plans = [
         name: 'Standard',
         price: 22,
         pricePeriod: '/ month',
-        description: 'For professionals and power users.',
+        description: '250 image credits.',
         features: [
             '250 image credits per month',
             'High-resolution images',
@@ -66,7 +67,7 @@ const plans = [
         name: 'Pro',
         price: 32,
         pricePeriod: '/ month',
-        description: 'For businesses and creative agencies.',
+        description: 'Unlimited credits.',
         features: [
             'Unlimited image credits',
             'Highest quality & resolution',
@@ -85,6 +86,7 @@ export default function PricingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
+  const Razorpay = useRazorpay();
 
 
   const handlePayment = async (planName: string, amount: number) => {
@@ -98,8 +100,8 @@ export default function PricingPage() {
         const order = await createOrder({ amount, currency: 'INR' });
 
         const options = {
-            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-            amount: order.amount,
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+            amount: order.amount.toString(),
             currency: order.currency,
             name: "Grock AI",
             description: `Purchase ${planName} Plan`,
@@ -124,9 +126,8 @@ export default function PricingPage() {
             }
         };
         
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
-
+        const rzp = new Razorpay(options);
+        
         rzp.on('payment.failed', function (response: any){
             console.error(response);
             toast({
@@ -135,6 +136,8 @@ export default function PricingPage() {
                 description: 'Something went wrong. Please try again.',
             });
         });
+        
+        rzp.open();
 
     } catch (error) {
         console.error("Payment Error: ", error);
@@ -159,113 +162,141 @@ export default function PricingPage() {
   }
 
   return (
-    <SidebarProvider>
-       <Sidebar>
+     <SidebarProvider>
+      <Sidebar>
         <SidebarRail />
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
-              <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <GrockLogo className="h-7 w-7 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold text-foreground tracking-tighter">
-                Grock AI
-              </h1>
-            </Link>
+            <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
+              <GrockLogo className="h-7 w-7 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold text-foreground tracking-tighter">
+              Grock AI
+            </h1>
+          </Link>
         </SidebarHeader>
         <SidebarContent>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                        <Link href="/generate">
-                            <Home />
-                            Generator
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive>
-                        <Link href="/pricing">
-                            <Gem />
-                            Pricing
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/generate">
+                  <Home />
+                  Generator
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive>
+                <Link href="/pricing">
+                  <Gem />
+                  Pricing
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          {user && (
-            userDataLoading ? (
-            <Skeleton className="h-10 w-full" />
-          ) : userData ? (
-            <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
-               <Avatar className="h-9 w-9">
-                  <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                  <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
+          {user &&
+            (userDataLoading ? (
+              <Skeleton className="h-10 w-full" />
+            ) : userData ? (
+              <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage
+                    src={user.photoURL || ''}
+                    alt={user.displayName || 'User'}
+                  />
+                  <AvatarFallback>
+                    {user.displayName?.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold truncate">{user.displayName}</p>
+                  <p className="text-sm font-semibold truncate">
+                    {user.displayName}
+                  </p>
                   <p className="text-xs text-muted-foreground">
                     {userData.imagesGenerated} images used
                   </p>
                 </div>
-            </div>
-          ): null)}
+              </div>
+            ) : null)}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <>
-          <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-            <div className="flex flex-col min-h-screen bg-background">
-               <Header/>
-              <main className="flex-1 flex flex-col items-center p-4 md:py-24">
-                <div className="container mx-auto max-w-6xl w-full animate-in">
-                  <div className="flex flex-col gap-8">
-                     <div className='text-center flex flex-col gap-2'>
-                        <h1 className='text-3xl md:text-4xl font-bold tracking-tight'>Choose Your Plan</h1>
-                        <p className='text-muted-foreground md:text-lg'>Simple, transparent pricing for everyone.</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {plans.map((plan) => (
-                            <Card key={plan.name} className={cn("flex flex-col", plan.isPrimary && "border-primary shadow-lg shadow-primary/10")}>
-                                <CardHeader>
-                                    <CardTitle>{plan.name}</CardTitle>
-                                    <CardDescription>{plan.description}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="flex-1">
-                                    <div className="mb-6">
-                                        <span className="text-4xl font-bold">₹{plan.price}</span>
-                                        <span className="text-muted-foreground">{plan.pricePeriod}</span>
-                                    </div>
-                                    <ul className="space-y-3">
-                                        {plan.features.map((feature, i) => (
-                                            <li key={i} className="flex items-center gap-2">
-                                                <CheckCircle className="h-5 w-5 text-primary" />
-                                                <span className="text-sm">{feature}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                                <CardFooter>
-                                    <Button 
-                                        className="w-full" 
-                                        disabled={(userData?.plan === plan.name && plan.name !== 'Free') || isProcessing !== null} 
-                                        variant={plan.isPrimary ? 'default' : 'secondary'}
-                                        onClick={() => handlePayment(plan.name, plan.price)}
-                                    >
-                                        {isProcessing === plan.name ? (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        ) : userData?.plan === plan.name ? 'Current Plan' : plan.cta}
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                  </div>
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+        <div className="flex flex-col min-h-screen bg-background">
+          <Header />
+          <main className="flex-1 flex flex-col items-center p-4 md:py-24">
+            <div className="container mx-auto max-w-6xl w-full animate-in">
+              <div className="flex flex-col gap-8">
+                <div className="text-center flex flex-col gap-2">
+                  <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                    Choose Your Plan
+                  </h1>
+                  <p className="text-muted-foreground md:text-lg">
+                    Simple, transparent pricing for everyone.
+                  </p>
                 </div>
-              </main>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {plans.map((plan) => (
+                    <Card
+                      key={plan.name}
+                      className={cn(
+                        'flex flex-col',
+                        plan.isPrimary &&
+                          'border-primary shadow-lg shadow-primary/10'
+                      )}
+                    >
+                      <CardHeader>
+                        <CardTitle>{plan.name}</CardTitle>
+                        <CardDescription>{plan.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="flex-1">
+                        <div className="mb-6">
+                          <span className="text-4xl font-bold">
+                            ₹{plan.price}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {plan.pricePeriod}
+                          </span>
+                        </div>
+                        <ul className="space-y-3">
+                          {plan.features.map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2">
+                              <CheckCircle className="h-5 w-5 text-primary" />
+                              <span className="text-sm">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                      <CardFooter>
+                        <Button
+                          className="w-full"
+                          disabled={
+                            (userData?.plan === plan.name &&
+                              plan.name !== 'Free') ||
+                            isProcessing !== null
+                          }
+                          variant={plan.isPrimary ? 'default' : 'secondary'}
+                          onClick={() => handlePayment(plan.name, plan.price)}
+                        >
+                          {isProcessing === plan.name ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : userData?.plan === plan.name ? (
+                            'Current Plan'
+                          ) : (
+                            plan.cta
+                          )}
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             </div>
-        </>
+          </main>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )
