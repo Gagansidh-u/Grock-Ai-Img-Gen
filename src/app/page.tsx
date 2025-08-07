@@ -10,6 +10,7 @@ import { ArrowRight, Brush, Image as ImageIcon, Sparkles, Home, Gem } from 'luci
 import { GrockLogo } from '@/components/icons';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
 import { AuthButton } from '@/components/auth-button';
+import { CreditUsage } from '@/components/credit-usage';
 
 
 const features = [
@@ -66,7 +67,8 @@ export default function LandingPage() {
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter className="p-2">
+        <SidebarFooter className="p-2 flex flex-col gap-2">
+          <CreditUsage />
           <AuthButton />
         </SidebarFooter>
       </Sidebar>
@@ -180,5 +182,3 @@ export default function LandingPage() {
     </SidebarProvider>
   );
 }
-
-    

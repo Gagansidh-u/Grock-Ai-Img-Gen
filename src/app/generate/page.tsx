@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useTransition, useEffect, useCallback } from 'react';
+import React, { useState, useTransition, useCallback } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,10 +23,9 @@ import { GrockLogo } from '@/components/icons';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserData } from '@/hooks/use-user-data';
 import { updateImageCount } from '@/lib/firestore';
-import { Progress } from '@/components/ui/progress';
 import { AuthButton } from '@/components/auth-button';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { CreditUsage } from '@/components/credit-usage';
 
 
 export default function GeneratorPage() {
@@ -40,8 +39,7 @@ export default function GeneratorPage() {
   const [isSuggesting, startSuggestionTransition] = useTransition();
   const { toast } = useToast();
   const { user } = useAuth();
-  const { userData, loading: userDataLoading } = useUserData();
-  const router = useRouter();
+  const { userData } = useUserData();
 
 
   const getPlanLimit = () => {
@@ -170,11 +168,6 @@ export default function GeneratorPage() {
   const showSmallUploadButton = promptRows <= 2;
   const hasReferenceImages = referenceImages.length > 0;
   
-  const imagesUsed = userData?.imagesGenerated ?? 0;
-  const imageLimit = getPlanLimit();
-  const progressPercentage = imageLimit === Infinity ? 100 : (imagesUsed / imageLimit) * 100;
-
-
   return (
     <SidebarProvider>
       <Sidebar>
@@ -209,7 +202,8 @@ export default function GeneratorPage() {
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter className="p-2">
+        <SidebarFooter className="p-2 flex flex-col gap-2">
+            <CreditUsage />
             <AuthButton />
         </SidebarFooter>
       </Sidebar>
@@ -239,19 +233,7 @@ export default function GeneratorPage() {
                   <h1 className='text-3xl md:text-4xl font-bold tracking-tight'>AI Image Generator</h1>
                   <p className='text-muted-foreground md:text-lg'>Create stunning visuals with the power of AI.</p>
                 </div>
-                 {user && !userDataLoading && userData && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                        <Card className="p-4 flex flex-col gap-2">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium">{userData?.plan} Plan</span>
-                                <span className="text-sm text-muted-foreground">
-                                {imageLimit === Infinity ? 'Unlimited' : `${imagesUsed} / ${imageLimit} images`}
-                                </span>
-                            </div>
-                            <Progress value={progressPercentage} />
-                        </Card>
-                    </motion.div>
-                 )}
+                 
                  <div {...getRootProps()} className={`relative border-2 rounded-2xl transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-input'}`}>
                   {hasReferenceImages && (
                     <div className="p-2 flex flex-wrap gap-2">

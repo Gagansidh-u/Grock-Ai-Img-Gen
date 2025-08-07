@@ -23,6 +23,7 @@ import { motion } from 'framer-motion';
 import { Invoice, InvoiceData } from '@/components/invoice';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { CreditUsage } from '@/components/credit-usage';
 
 declare const window: any;
 
@@ -226,7 +227,8 @@ export default function PricingPage() {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter className="p-2">
+        <SidebarFooter className="p-2 flex flex-col gap-2">
+            <CreditUsage />
             <AuthButton />
         </SidebarFooter>
       </Sidebar>
