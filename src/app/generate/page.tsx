@@ -26,6 +26,7 @@ import { AuthButton } from '@/components/auth-button';
 import { motion } from 'framer-motion';
 import { CreditUsage } from '@/components/credit-usage';
 import { Header } from '@/components/header';
+import { updateImageCount } from '@/lib/firestore';
 
 
 export default function GeneratorPage() {
@@ -79,6 +80,11 @@ export default function GeneratorPage() {
             userId: user?.uid 
         });
         setGeneratedImages(result.images);
+        
+        if (user && userData && userData.plan !== 'Pro') {
+            await updateImageCount(user.uid, numberOfImages);
+        }
+
       } catch (error) {
         console.error('Image generation failed:', error);
         toast({
