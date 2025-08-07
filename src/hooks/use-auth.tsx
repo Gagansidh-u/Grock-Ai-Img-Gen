@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { auth, onAuthStateChanged, User, signInWithPopup, googleProvider } from '@/lib/firebase';
 import { useToast } from './use-toast';
+import { createUserProfile, getUserProfile } from '@/lib/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -20,7 +21,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userProfile = await getUserProfile(user.uid);
+        if (!userProfile) {
+          await createUserProfile(user);
+        }
+      }
       setUser(user);
       setLoading(false);
     });
