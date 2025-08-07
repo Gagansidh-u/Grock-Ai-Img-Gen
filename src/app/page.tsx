@@ -37,7 +37,7 @@ export default function LandingPage() {
               Unleash Your Creativity with AI
             </h1>
             <p className="max-w-2xl text-lg md:text-xl text-muted-foreground">
-              Welcome to Grock AI Image Generator. Transform your text prompts into stunning visual art, logos, and more. Effortlessly create, customize, and download unique images in seconds.
+              Welcome to the Grock AI Image Generator, brought to you by Grock Technologies. Transform your text prompts into stunning visual art, logos, and more. Effortlessly create, customize, and download unique images in seconds.
             </p>
             <Link href="/generate">
               <Button size="lg" className="font-semibold text-lg group">
@@ -118,7 +118,16 @@ export default function LandingPage() {
                  <p className="text-lg font-semibold">Grock AI</p>
             </div>
           <p className="text-muted-foreground">
-            &copy; {new Date().getFullYear()} Grock Technologies. All rights reserved.
+            &copy; {new Date().getFullYear()}{' '}
+            <a
+              href="https://www.grock.fun"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline hover:text-primary"
+            >
+              Grock Technologies
+            </a>
+            . All rights reserved.
           </p>
         </div>
       </footer>

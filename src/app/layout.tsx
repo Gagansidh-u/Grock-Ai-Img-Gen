@@ -7,7 +7,7 @@ import { GeistMono } from 'geist/font/mono';
 
 export const metadata: Metadata = {
   title: 'Grock AI Image Generator',
-  description: 'Generate stunning images with the power of AI. Built with Grock Technologies.',
+  description: 'Generate stunning images with the power of AI. Built by Grock Technologies.',
 };
 
 export default function RootLayout({
