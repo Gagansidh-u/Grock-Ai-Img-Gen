@@ -142,13 +142,14 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Image src="https://placehold.co/400x600.png" data-ai-hint="fantasy castle" alt="Fantasy castle" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://placehold.co/400x600.png" data-ai-hint="anime character portrait" alt="Anime character" width={400} height={600} className="rounded-lg object-cover w-full h-full row-span-2 hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://placehold.co/400x300.png" data-ai-hint="cyberpunk city" alt="Cyberpunk city" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://placehold.co/400x300.png" data-ai-hint="3d model car" alt="3D model car" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://placehold.co/400x300.png" data-ai-hint="photorealistic animal" alt="Photorealistic animal" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://placehold.co/400x300.png" data-ai-hint="vaporwave sunset" alt="Vaporwave sunset" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://placehold.co/400x600.png" data-ai-hint="abstract art" alt="Abstract art" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/ba4ffc06-f9e9-4cdb-b15b-bd9497b0005d.jpeg" alt="Fantasy castle" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/e7511167-627d-4861-8b8b-499f5bf1e01e.jpeg" alt="Anime character" width={400} height={600} className="rounded-lg object-cover w-full h-full row-span-2 hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/b01b75e9-fd97-4b03-ad7c-e4693f18077f.jpeg" alt="Cyberpunk city" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/Lilith.jpeg" alt="3D model car" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/Goku.jpeg" alt="Photorealistic animal" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/9c84c2ef-ecf6-4f4c-ad3d-a26313858da7.jpeg" alt="Vaporwave sunset" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/1467fd58-8982-4b29-a314-cf481ea61e63.jpeg" alt="Abstract art" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/a9dcd4d5-0380-4ed7-9201-8e59ba2618c2.jpeg" alt="Abstract art" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
                 </div>
               </div>
             </section>
