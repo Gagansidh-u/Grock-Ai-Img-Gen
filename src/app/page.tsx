@@ -80,7 +80,7 @@ export default function LandingPage() {
             <section className="container mx-auto px-4 py-20 md:py-32 text-center">
               <div className="flex flex-col items-center gap-4">
                 <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-400 to-pink-500">
-                  Unleash Your Creativity with AI
+                  Unleash Your Creativity with Grock AI
                 </h1>
                 <p className="max-w-2xl text-lg md:text-xl text-muted-foreground">
                   Welcome to the Grock AI Image Generator, brought to you by Grock Technologies. Transform your text prompts into stunning visual art, logos, and more. Effortlessly create, customize, and download unique images in seconds.
