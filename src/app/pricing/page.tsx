@@ -5,7 +5,6 @@ import React from 'react';
 import Script from 'next/script';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
-import { SidebarProvider, Sidebar, SidebarRail, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Home, Gem, CheckCircle, Loader2 } from 'lucide-react';
 import { GrockLogo } from '@/components/icons';
@@ -17,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createOrder } from '@/lib/razorpay';
 import { useToast } from '@/hooks/use-toast';
+import { Header } from '@/components/header';
 
 const plans = [
     {
@@ -85,15 +85,11 @@ export default function PricingPage() {
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
 
 
-  React.useEffect(() => {
-    if (!loading && !user) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
-
-
   const handlePayment = async (planName: string, amount: number) => {
-    if (!user) return;
+    if (!user) {
+        router.push('/login?redirect=/pricing');
+        return;
+    }
     setIsProcessing(planName);
 
     try {
@@ -151,84 +147,21 @@ export default function PricingPage() {
   };
 
 
-  if (loading || !user) {
+  if (loading) {
     return (
       <div className="flex flex-col min-h-screen bg-background items-center justify-center">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading your creative space...</p>
+        <p className="mt-4 text-muted-foreground">Loading plans...</p>
       </div>
     );
   }
 
   return (
-    <SidebarProvider>
+    <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      <Sidebar>
-        <SidebarRail />
-        <SidebarHeader>
-          <Link href="/" className="flex items-center gap-3">
-              <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <GrockLogo className="h-7 w-7 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold text-foreground tracking-tighter">
-                Grock AI
-              </h1>
-            </Link>
-        </SidebarHeader>
-        <SidebarContent>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                        <Link href="/generate">
-                            <Home />
-                            Generator
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive>
-                        <Link href="/pricing">
-                            <Gem />
-                            Pricing
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-          {userDataLoading ? (
-            <Skeleton className="h-10 w-full" />
-          ) : userData ? (
-            <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
-               <Avatar className="h-9 w-9">
-                  <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                  <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold truncate">{user.displayName}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {userData.plan} Plan
-                  </p>
-                </div>
-            </div>
-          ): null}
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
         <div className="flex flex-col min-h-screen bg-background">
-           <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
-              <div className="container mx-auto px-4">
-                <div className="flex items-center justify-between h-16">
-                  <Link href="/" className="flex items-center gap-3">
-                    <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                      <GrockLogo className="h-7 w-7 text-primary" />
-                    </div>
-                  </Link>
-                  <SidebarTrigger />
-                </div>
-              </div>
-          </header>
-          <main className="flex-1 flex flex-col items-center p-4 md:p-6">
+           <Header/>
+          <main className="flex-1 flex flex-col items-center p-4 md:py-24">
             <div className="container mx-auto max-w-6xl w-full animate-in">
               <div className="flex flex-col gap-8">
                  <div className='text-center flex flex-col gap-2'>
@@ -276,7 +209,6 @@ export default function PricingPage() {
             </div>
           </main>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </>
   )
 }

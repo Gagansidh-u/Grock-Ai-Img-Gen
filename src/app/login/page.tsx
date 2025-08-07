@@ -1,9 +1,9 @@
 
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { GrockLogo } from '@/components/icons';
@@ -20,17 +20,18 @@ const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-
-export default function LoginPage() {
+function LoginPageContent() {
   const { user, loading, signIn } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSigningIn, setIsSigningIn] = React.useState(false);
 
   useEffect(() => {
     if (!loading && user) {
-      router.push('/generate');
+      const redirectUrl = searchParams.get('redirect') || '/generate';
+      router.push(redirectUrl);
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, searchParams]);
 
   const handleSignIn = async () => {
     setIsSigningIn(true);
@@ -88,4 +89,13 @@ export default function LoginPage() {
         </Card>
     </div>
   );
+}
+
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginPageContent />
+    </Suspense>
+  )
 }
