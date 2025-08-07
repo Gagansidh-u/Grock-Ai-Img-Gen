@@ -1,3 +1,4 @@
+
 // src/lib/firestore.ts
 import { db } from './firebase';
 import { doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -32,6 +33,22 @@ export const createUserProfile = async (user: User, displayName?: string | null)
   };
   await setDoc(userRef, userProfile);
 };
+
+// Backfill missing fields for an existing user
+export const updateUserProfileFields = async (uid: string): Promise<void> => {
+    const userRef = doc(db, 'users', uid);
+    const renewalDate = new Date();
+    renewalDate.setMonth(renewalDate.getMonth() + 1);
+
+    const defaultFields = {
+        plan: 'Free',
+        imageCredits: 8,
+        planRenewalDate: Timestamp.fromDate(renewalDate),
+        updatedAt: serverTimestamp(),
+    };
+    // Use set with merge:true to add new fields without overwriting existing ones
+    await setDoc(userRef, defaultFields, { merge: true });
+}
 
 // Get a user profile from Firestore
 export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {

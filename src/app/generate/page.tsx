@@ -17,12 +17,11 @@ import { fileToDataUri } from '@/lib/utils';
 import { useDropzone } from 'react-dropzone';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Label } from '@/components/ui/label';
-import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarRail, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset, SidebarSeparator } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { TryQuadLogo } from '@/components/icons';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserData } from '@/hooks/use-user-data';
-import { updateImageCount } from '@/lib/firestore';
 import { AuthButton } from '@/components/auth-button';
 import { motion } from 'framer-motion';
 import { CreditUsage } from '@/components/credit-usage';
@@ -71,11 +70,15 @@ export default function GeneratorPage() {
     startGenerationTransition(async () => {
       try {
         setGeneratedImages([]);
-        const result = await generateImage({ prompt, style, aspectRatio, numberOfImages, referenceImages });
+        const result = await generateImage({ 
+            prompt, 
+            style, 
+            aspectRatio, 
+            numberOfImages, 
+            referenceImages, 
+            userId: user?.uid 
+        });
         setGeneratedImages(result.images);
-        if (user && userData && userData.plan !== 'Pro') {
-          await updateImageCount(user.uid, numberOfImages);
-        }
       } catch (error) {
         console.error('Image generation failed:', error);
         toast({

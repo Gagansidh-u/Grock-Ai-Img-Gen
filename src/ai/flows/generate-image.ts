@@ -1,3 +1,4 @@
+
 // src/ai/flows/generate-image.ts
 'use server';
 /**
@@ -11,6 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import {STYLES} from '@/lib/options';
+import { updateImageCount, getUserProfile } from '@/lib/firestore';
 
 const GenerateImageInputSchema = z.object({
   prompt: z.string().describe('The text prompt to use to generate the image.'),
@@ -39,6 +41,7 @@ const GenerateImageInputSchema = z.object({
     )
     .optional()
     .describe('An array of reference image data URIs.'),
+  userId: z.string().optional().describe('The ID of the user generating the image.'),
 });
 export type GenerateImageInput = z.infer<typeof GenerateImageInputSchema>;
 
@@ -95,6 +98,15 @@ const generateImageFlow = ai.defineFlow(
     });
 
     const images = await Promise.all(generationPromises);
+    
+    // Deduct credits after successful generation
+    if (input.userId) {
+      const userProfile = await getUserProfile(input.userId);
+      if (userProfile && userProfile.plan !== 'Pro') {
+        await updateImageCount(input.userId, input.numberOfImages);
+      }
+    }
+
 
     return {images};
   }

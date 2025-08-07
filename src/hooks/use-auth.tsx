@@ -15,7 +15,7 @@ import {
   updateProfile,
 } from '@/lib/firebase';
 import { useToast } from './use-toast';
-import { createUserProfile, getUserProfile, UserProfile } from '@/lib/firestore';
+import { createUserProfile, getUserProfile, UserProfile, updateUserProfileFields } from '@/lib/firestore';
 import * as z from 'zod';
 
 const authCredentialsSchema = z.object({
@@ -42,28 +42,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const handleUserCreation = async (user: User, displayName?: string | null): Promise<UserProfile | null> => {
+  const handleUserVerification = async (user: User, displayName?: string | null): Promise<UserProfile | null> => {
     let userProfile = await getUserProfile(user.uid);
     if (!userProfile) {
+      // Create profile for new user
       await createUserProfile(user, displayName);
+      userProfile = await getUserProfile(user.uid);
+    } else if (!userProfile.plan || !userProfile.hasOwnProperty('imageCredits')) {
+      // Backfill old users with new fields
+      await updateUserProfileFields(user.uid);
       userProfile = await getUserProfile(user.uid);
     }
     return userProfile;
   }
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await handleUserVerification(user);
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const signInWithGoogle = async () => {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      await handleUserCreation(result.user, result.user.displayName);
+      await handleUserVerification(result.user, result.user.displayName);
     } catch (error: any) {
       console.error("Error signing in with Google: ", error);
       toast({
@@ -84,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await updateProfile(result.user, {
         displayName: credentials.name
       })
-      await handleUserCreation(result.user, credentials.name);
+      await handleUserVerification(result.user, credentials.name);
     } catch (error: any) {
        console.error("Error signing up: ", error);
        toast({
@@ -101,7 +111,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithEmailPassword = async (credentials: AuthCredentials) => {
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+      const result = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+      await handleUserVerification(result.user);
     } catch (error: any) {
        console.error("Error signing in: ", error);
        toast({
