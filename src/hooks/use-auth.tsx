@@ -11,7 +11,8 @@ import {
   googleProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut as firebaseSignOut
+  signOut as firebaseSignOut,
+  updateProfile,
 } from '@/lib/firebase';
 import { useToast } from './use-toast';
 import { createUserProfile, getUserProfile } from '@/lib/firestore';
@@ -20,6 +21,7 @@ import * as z from 'zod';
 const authCredentialsSchema = z.object({
   email: z.string().email(),
   password: z.string(),
+  name: z.string().optional(),
 });
 
 export type AuthCredentials = z.infer<typeof authCredentialsSchema>;
@@ -48,10 +50,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const handleUserCreation = async (user: User) => {
+  const handleUserCreation = async (user: User, displayName?: string | null) => {
     const userProfile = await getUserProfile(user.uid);
     if (!userProfile) {
-      await createUserProfile(user);
+      await createUserProfile(user, displayName);
     }
   }
 
@@ -59,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      await handleUserCreation(result.user);
+      await handleUserCreation(result.user, result.user.displayName);
     } catch (error: any) {
       console.error("Error signing in with Google: ", error);
       toast({
@@ -77,7 +79,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       const result = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
-      await handleUserCreation(result.user);
+      await updateProfile(result.user, {
+        displayName: credentials.name
+      })
+      await handleUserCreation(result.user, credentials.name);
     } catch (error: any) {
        console.error("Error signing up: ", error);
        toast({
@@ -137,5 +142,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-
-    

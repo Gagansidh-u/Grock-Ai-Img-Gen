@@ -23,9 +23,6 @@ export function Header() {
           <div className="hidden md:block">
             <AuthButton />
           </div>
-           <div className="md:hidden">
-            <SidebarTrigger />
-          </div>
         </div>
       </div>
     </header>

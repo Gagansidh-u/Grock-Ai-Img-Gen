@@ -13,10 +13,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 
-const formSchema = z.object({
+const signupSchema = z.object({
+  name: z.string().min(2, { message: "Please enter your name." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
+
+const signinSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email." }),
+  password: z.string().min(1, { message: "Please enter your password." }),
+});
+
 
 const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px" {...props}>
@@ -37,15 +44,16 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm({
+    resolver: zodResolver(authMode === 'signin' ? signinSchema : signupSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
-  const handleAuthAction = async (values: z.infer<typeof formSchema>) => {
+  const handleAuthAction = async (values: any) => {
     setIsSubmitting(true);
     try {
       if (authMode === 'signin') {
@@ -93,6 +101,21 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
                 <CardContent className="flex flex-col gap-4 p-6 pt-2">
                    <Form {...form}>
                      <form onSubmit={form.handleSubmit(handleAuthAction)} className="space-y-4">
+                       {authMode === 'signup' && (
+                          <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Full Name</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="John Doe" {...field} disabled={isSubmitting} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                       )}
                        <FormField
                           control={form.control}
                           name="email"
@@ -163,5 +186,3 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
     </Dialog>
   );
 }
-
-    

@@ -1,3 +1,4 @@
+
 // src/lib/firestore.ts
 import { db } from './firebase';
 import { doc, setDoc, getDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
@@ -14,12 +15,12 @@ export interface UserProfile {
 }
 
 // Create a new user profile in Firestore
-export const createUserProfile = async (user: User): Promise<void> => {
+export const createUserProfile = async (user: User, displayName?: string | null): Promise<void> => {
   const userRef = doc(db, 'users', user.uid);
   const userProfile: UserProfile = {
     uid: user.uid,
     email: user.email,
-    displayName: user.displayName,
+    displayName: displayName || user.displayName,
     plan: 'Free',
     imagesGenerated: 0,
     createdAt: serverTimestamp(),
