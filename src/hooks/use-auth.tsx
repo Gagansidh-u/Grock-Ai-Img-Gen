@@ -15,7 +15,7 @@ import {
   updateProfile,
 } from '@/lib/firebase';
 import { useToast } from './use-toast';
-import { createUserProfile, getUserProfile } from '@/lib/firestore';
+import { createUserProfile, getUserProfile, UserProfile } from '@/lib/firestore';
 import * as z from 'zod';
 
 const authCredentialsSchema = z.object({
@@ -50,11 +50,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const handleUserCreation = async (user: User, displayName?: string | null) => {
-    const userProfile = await getUserProfile(user.uid);
+  const handleUserCreation = async (user: User, displayName?: string | null): Promise<UserProfile | null> => {
+    let userProfile = await getUserProfile(user.uid);
     if (!userProfile) {
       await createUserProfile(user, displayName);
+      userProfile = await getUserProfile(user.uid);
     }
+    return userProfile;
   }
 
   const signInWithGoogle = async () => {
