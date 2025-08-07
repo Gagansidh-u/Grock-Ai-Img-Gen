@@ -1,9 +1,9 @@
 
 // src/components/invoice.tsx
 import React from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from './ui/card';
 import { Separator } from './ui/separator';
-import { TryQuadLogo } from './icons';
 
 export interface InvoiceData {
   planName: string;
@@ -22,7 +22,7 @@ export function Invoice(props: InvoiceData) {
             <div className="flex justify-between items-start">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <TryQuadLogo className="h-7 w-7 text-primary"/>
+                        <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={28} height={28} className="text-primary"/>
                         <h1 className="text-2xl font-bold">TryQuad AI</h1>
                     </div>
                     <CardDescription>Invoice for your purchase</CardDescription>
@@ -76,3 +76,5 @@ export function Invoice(props: InvoiceData) {
     </Card>
   );
 }
+
+    

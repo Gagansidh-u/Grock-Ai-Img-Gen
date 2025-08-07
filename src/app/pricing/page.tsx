@@ -4,8 +4,8 @@
 import React from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
+import Image from 'next/image';
 import { Home, Gem, CheckCircle, Loader2, Download, X, ShieldAlert } from 'lucide-react';
-import { TryQuadLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
@@ -200,7 +200,7 @@ export default function PricingPage() {
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
             <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-              <TryQuadLogo className="h-7 w-7 text-primary" />
+              <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={28} height={28} className="text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-foreground tracking-tighter">
               TryQuad AI
@@ -368,3 +368,5 @@ export default function PricingPage() {
     </>
   )
 }
+
+    

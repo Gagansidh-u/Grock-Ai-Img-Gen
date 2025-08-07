@@ -19,7 +19,6 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Label } from '@/components/ui/label';
 import { SidebarProvider, Sidebar, SidebarRail, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset, SidebarSeparator } from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { TryQuadLogo } from '@/components/icons';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserData } from '@/hooks/use-user-data';
 import { AuthButton } from '@/components/auth-button';
@@ -171,7 +170,7 @@ export default function GeneratorPage() {
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <TryQuadLogo className="h-7 w-7 text-primary" />
+                <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={28} height={28} className="text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground tracking-tighter">
                 TryQuad AI
@@ -411,3 +410,5 @@ export default function GeneratorPage() {
     </SidebarProvider>
   );
 }
+
+    

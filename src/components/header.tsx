@@ -1,6 +1,6 @@
 
 import Link from "next/link";
-import { TryQuadLogo } from "@/components/icons";
+import Image from 'next/image';
 import { SidebarTrigger } from "./ui/sidebar";
 import { AuthButton } from "./auth-button";
 
@@ -13,7 +13,7 @@ export function Header() {
             <SidebarTrigger className="md:hidden" />
             <Link href="/" className="flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <TryQuadLogo className="h-7 w-7 text-primary" />
+                <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={28} height={28} className="text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground tracking-tighter">
                 TryQuad AI
@@ -28,3 +28,5 @@ export function Header() {
     </header>
   );
 }
+
+    
