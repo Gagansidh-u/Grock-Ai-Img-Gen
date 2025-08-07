@@ -27,7 +27,7 @@ const plans = [
         pricePeriod: '/ month',
         description: 'For individuals starting out.',
         features: [
-            '25 image generations per month',
+            '8 image generations per month',
             'Basic image quality',
             'Community support',
         ],
@@ -36,11 +36,11 @@ const plans = [
     },
     {
         name: 'Basic',
-        price: 10,
+        price: 12,
         pricePeriod: '/ month',
         description: 'For hobbyists and frequent users.',
         features: [
-            '250 image generations per month',
+            '100 image generations per month',
             'Standard image quality',
             'Access to all styles',
             'Email support',
@@ -50,11 +50,11 @@ const plans = [
     },
     {
         name: 'Standard',
-        price: 25,
+        price: 22,
         pricePeriod: '/ month',
         description: 'For professionals and power users.',
         features: [
-            '1000 image generations per month',
+            '250 image generations per month',
             'High-resolution images',
             'Priority generation queue',
             'Priority support',
@@ -64,7 +64,7 @@ const plans = [
     },
     {
         name: 'Pro',
-        price: 60,
+        price: 32,
         pricePeriod: '/ month',
         description: 'For businesses and creative agencies.',
         features: [
@@ -159,62 +159,62 @@ export default function PricingPage() {
   }
 
   return (
-    <>
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-       <SidebarProvider>
-         <Sidebar>
-            <SidebarRail />
-            <SidebarHeader>
-              <Link href="/" className="flex items-center gap-3">
-                  <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                    <GrockLogo className="h-7 w-7 text-primary" />
-                  </div>
-                  <h1 className="text-2xl font-bold text-foreground tracking-tighter">
-                    Grock AI
-                  </h1>
-                </Link>
-            </SidebarHeader>
-            <SidebarContent>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                            <Link href="/generate">
-                                <Home />
-                                Generator
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive>
-                            <Link href="/pricing">
-                                <Gem />
-                                Pricing
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarContent>
-            <SidebarFooter>
-              {user && (
-                userDataLoading ? (
-                <Skeleton className="h-10 w-full" />
-              ) : userData ? (
-                <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
-                   <Avatar className="h-9 w-9">
-                      <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                      <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold truncate">{user.displayName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {userData.imagesGenerated} images used
-                      </p>
-                    </div>
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarRail />
+        <SidebarHeader>
+          <Link href="/" className="flex items-center gap-3">
+              <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
+                <GrockLogo className="h-7 w-7 text-primary" />
+              </div>
+              <h1 className="text-2xl font-bold text-foreground tracking-tighter">
+                Grock AI
+              </h1>
+            </Link>
+        </SidebarHeader>
+        <SidebarContent>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                        <Link href="/generate">
+                            <Home />
+                            Generator
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive>
+                        <Link href="/pricing">
+                            <Gem />
+                            Pricing
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarContent>
+        <SidebarFooter>
+          {user && (
+            userDataLoading ? (
+            <Skeleton className="h-10 w-full" />
+          ) : userData ? (
+            <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
+               <Avatar className="h-9 w-9">
+                  <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
+                  <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold truncate">{user.displayName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {userData.imagesGenerated} images used
+                  </p>
                 </div>
-              ): null)}
-            </SidebarFooter>
-          </Sidebar>
-          <SidebarInset>
+            </div>
+          ): null)}
+        </SidebarFooter>
+      </Sidebar>
+      <SidebarInset>
+        <>
+          <Script src="https://checkout.razorpay.com/v1/checkout.js" />
             <div className="flex flex-col min-h-screen bg-background">
                <Header/>
               <main className="flex-1 flex flex-col items-center p-4 md:py-24">
@@ -234,7 +234,7 @@ export default function PricingPage() {
                                 </CardHeader>
                                 <CardContent className="flex-1">
                                     <div className="mb-6">
-                                        <span className="text-4xl font-bold">${plan.price}</span>
+                                        <span className="text-4xl font-bold">₹{plan.price}</span>
                                         <span className="text-muted-foreground">{plan.pricePeriod}</span>
                                     </div>
                                     <ul className="space-y-3">
@@ -249,7 +249,7 @@ export default function PricingPage() {
                                 <CardFooter>
                                     <Button 
                                         className="w-full" 
-                                        disabled={userData?.plan === plan.name || isProcessing !== null} 
+                                        disabled={(userData?.plan === plan.name && plan.name !== 'Free') || isProcessing !== null} 
                                         variant={plan.isPrimary ? 'default' : 'secondary'}
                                         onClick={() => handlePayment(plan.name, plan.price)}
                                     >
@@ -265,8 +265,8 @@ export default function PricingPage() {
                 </div>
               </main>
             </div>
-          </SidebarInset>
-        </SidebarProvider>
-      </>
+        </>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
