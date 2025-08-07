@@ -12,10 +12,10 @@ export function TryQuadLogo(props: SVGProps<SVGSVGElement>) {
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M15.5 14h.01" />
-      <path d="M8.5 14h.01" />
-      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10Z" />
-      <path d="M18 10h-1.26a2 2 0 1 0-3.48 0H6" />
+        <path d="M12 2a10 10 0 1 0 10 10" />
+        <path d="M12 12a5 5 0 1 0-5-5" />
+        <path d="M12 22a10 10 0 0 0 10-10" />
+        <path d="m14.5 9.5-5 5" />
     </svg>
   );
 }
