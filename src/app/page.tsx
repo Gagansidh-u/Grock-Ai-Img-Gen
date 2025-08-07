@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Brush, Image as ImageIcon, Sparkles, Home, Gem } from 'lucide-react';
 import { GrockLogo } from '@/components/icons';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
+import { AuthButton } from '@/components/auth-button';
 
 
 const features = [
@@ -65,7 +66,8 @@ export default function LandingPage() {
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter>
+        <SidebarFooter className="p-2">
+          <AuthButton />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
@@ -178,3 +180,5 @@ export default function LandingPage() {
     </SidebarProvider>
   );
 }
+
+    

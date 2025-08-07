@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { generateImage } from '@/ai/flows/generate-image';
 import { suggestPrompt } from '@/ai/flows/suggest-prompt';
 import { useToast } from '@/hooks/use-toast';
-import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X, Home, Gem } from 'lucide-react';
+import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X, Home, Gem, User as UserIcon } from 'lucide-react';
 import { STYLES, ASPECT_RATIOS, IMAGE_COUNTS } from '@/lib/options';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,6 +20,12 @@ import { Label } from '@/components/ui/label';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { GrockLogo } from '@/components/icons';
+import { useAuth } from '@/hooks/use-auth';
+import { useUserData } from '@/hooks/use-user-data';
+import { updateImageCount } from '@/lib/firestore';
+import { Progress } from '@/components/ui/progress';
+import { AuthButton } from '@/components/auth-button';
+
 
 export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
@@ -31,8 +37,20 @@ export default function GeneratorPage() {
   const [isGenerating, startGenerationTransition] = useTransition();
   const [isSuggesting, startSuggestionTransition] = useTransition();
   const { toast } = useToast();
-  const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  
+  const { user } = useAuth();
+  const { userData, loading: userDataLoading } = useUserData();
+
+  const getPlanLimit = () => {
+    if (!userData) return 8; // Default for non-logged-in or new users
+    switch (userData.plan) {
+      case 'Free': return 8;
+      case 'Basic': return 100;
+      case 'Standard': return 250;
+      case 'Pro': return Infinity;
+      default: return 8;
+    }
+  }
+
   const handleGenerate = () => {
     if (!prompt.trim() && referenceImages.length === 0) {
       toast({
@@ -42,12 +60,33 @@ export default function GeneratorPage() {
       });
       return;
     }
+    
+    if (user && userData) {
+        const limit = getPlanLimit();
+        if (userData.imagesGenerated + numberOfImages > limit) {
+             toast({
+                variant: 'destructive',
+                title: 'Image limit reached',
+                description: 'You have reached your monthly image generation limit. Please upgrade your plan to continue.',
+                action: (
+                  <Button asChild>
+                    <Link href="/pricing">Upgrade</Link>
+                  </Button>
+                )
+            });
+            return;
+        }
+    }
+
 
     startGenerationTransition(async () => {
       try {
         setGeneratedImages([]);
         const result = await generateImage({ prompt, style, aspectRatio, numberOfImages, referenceImages });
         setGeneratedImages(result.images);
+        if (user) {
+            await updateImageCount(user.uid, numberOfImages);
+        }
       } catch (error) {
         console.error('Image generation failed:', error);
         toast({
@@ -71,17 +110,6 @@ export default function GeneratorPage() {
       setNumberOfImages(Number(value));
     }
   };
-
-  useEffect(() => {
-    if (initialRenderComplete) {
-      if ((prompt.trim() || referenceImages.length > 0) && (aspectRatio || numberOfImages)) {
-        handleGenerate();
-      }
-    } else {
-      setInitialRenderComplete(true);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [aspectRatio, numberOfImages]);
 
   const handleSuggestPrompt = () => {
     startSuggestionTransition(async () => {
@@ -137,6 +165,10 @@ export default function GeneratorPage() {
   const promptRows = prompt.split('\n').length;
   const showSmallUploadButton = promptRows <= 2;
   const hasReferenceImages = referenceImages.length > 0;
+  
+  const imagesUsed = userData?.imagesGenerated ?? 0;
+  const imageLimit = getPlanLimit();
+  const progressPercentage = imageLimit === Infinity ? 100 : (imagesUsed / imageLimit) * 100;
 
 
   return (
@@ -173,7 +205,8 @@ export default function GeneratorPage() {
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter>
+        <SidebarFooter className="p-2">
+            <AuthButton />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
@@ -197,6 +230,17 @@ export default function GeneratorPage() {
                   <h1 className='text-3xl md:text-4xl font-bold tracking-tight'>AI Image Generator</h1>
                   <p className='text-muted-foreground md:text-lg'>Create stunning visuals with the power of AI.</p>
                 </div>
+                 {user && !userDataLoading && (
+                    <Card className="p-4 flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">{userData?.plan} Plan</span>
+                        <span className="text-sm text-muted-foreground">
+                          {imageLimit === Infinity ? 'Unlimited' : `${imagesUsed} / ${imageLimit} images`}
+                        </span>
+                      </div>
+                      <Progress value={progressPercentage} />
+                    </Card>
+                 )}
                  <div {...getRootProps()} className={`relative border-2 rounded-2xl transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-input'}`}>
                   {hasReferenceImages && (
                     <div className="p-2 flex flex-wrap gap-2">
@@ -358,3 +402,5 @@ export default function GeneratorPage() {
     </SidebarProvider>
   );
 }
+
+    

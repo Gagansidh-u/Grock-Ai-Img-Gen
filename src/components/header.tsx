@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GrockLogo } from "@/components/icons";
 import { SidebarTrigger } from "./ui/sidebar";
+import { AuthButton } from "./auth-button";
 
 export function Header() {
   return (
@@ -18,9 +19,13 @@ export function Header() {
               </h1>
             </Link>
           </div>
-
+          <div className="hidden md:block">
+            <AuthButton />
+          </div>
         </div>
       </div>
     </header>
   );
 }
+
+    

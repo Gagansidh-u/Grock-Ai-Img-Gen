@@ -10,6 +10,14 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { cn } from '@/lib/utils';
 import { Header } from '@/components/header';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
+import useRazorpay from "react-razorpay";
+import { createOrder } from '@/lib/razorpay';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
+import { updateUserPlan, UserProfile } from '@/lib/firestore';
+import { AuthButton } from '@/components/auth-button';
+import { useUserData } from '@/hooks/use-user-data';
 
 const plans = [
     {
@@ -71,6 +79,74 @@ const plans = [
 
 
 export default function PricingPage() {
+  const [loadingPlan, setLoadingPlan] = React.useState<string | null>(null);
+  const Razorpay = useRazorpay();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const { userData } = useUserData();
+  const router = useRouter();
+
+  const handlePayment = async (plan: typeof plans[0]) => {
+    if (!user) {
+      router.push('/login?redirect=/pricing');
+      return;
+    }
+    setLoadingPlan(plan.name);
+    try {
+      const order = await createOrder({
+        amount: plan.price * 100, // Amount in paise
+        currency: 'INR',
+      });
+      
+      if (!order) {
+        throw new Error('Order creation failed');
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Grock AI',
+        description: `${plan.name} Plan`,
+        order_id: order.id,
+        handler: async (response: any) => {
+          await updateUserPlan(user.uid, plan.name as UserProfile['plan']);
+          toast({
+            title: 'Payment Successful!',
+            description: `You have successfully upgraded to the ${plan.name} plan.`,
+          });
+           router.push('/generate');
+        },
+        prefill: {
+          name: user.displayName || 'Grock AI User',
+          email: user.email || '',
+        },
+        theme: {
+          color: '#8A2BE2',
+        },
+      };
+      const rzp = new Razorpay(options);
+      rzp.on('payment.failed', function (response: any) {
+        toast({
+          variant: 'destructive',
+          title: 'Payment Failed',
+          description: response.error.description,
+        });
+      });
+      rzp.open();
+
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not initiate payment. Please try again.',
+      });
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
+
 
   return (
      <SidebarProvider>
@@ -106,7 +182,8 @@ export default function PricingPage() {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter>
+        <SidebarFooter className="p-2">
+            <AuthButton />
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
@@ -157,12 +234,13 @@ export default function PricingPage() {
                         </ul>
                       </CardContent>
                       <CardFooter>
-                        <Button
+                         <Button
                           className="w-full"
-                          disabled={plan.name !== 'Free'}
+                          disabled={loadingPlan === plan.name || userData?.plan === plan.name}
                           variant={plan.isPrimary ? 'default' : 'secondary'}
+                          onClick={() => plan.name !== 'Free' && handlePayment(plan)}
                         >
-                           {plan.name === 'Free' ? 'Current Plan' : plan.cta}
+                           {loadingPlan === plan.name ? <Loader2 className="animate-spin" /> : (userData?.plan === plan.name ? 'Current Plan' : plan.cta)}
                         </Button>
                       </CardFooter>
                     </Card>
@@ -176,3 +254,5 @@ export default function PricingPage() {
     </SidebarProvider>
   )
 }
+
+    
