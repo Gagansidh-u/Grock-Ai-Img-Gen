@@ -2,6 +2,7 @@
 "use client";
 
 import React from 'react';
+import Script from 'next/script';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { SidebarProvider, Sidebar, SidebarRail, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
@@ -14,11 +15,13 @@ import { cn } from '@/lib/utils';
 import { useUserData } from '@/hooks/use-user-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { createOrder } from '@/lib/razorpay';
+import { useToast } from '@/hooks/use-toast';
 
 const plans = [
     {
         name: 'Free',
-        price: '$0',
+        price: 0,
         pricePeriod: '/ month',
         description: 'For individuals starting out.',
         features: [
@@ -31,7 +34,7 @@ const plans = [
     },
     {
         name: 'Basic',
-        price: '$10',
+        price: 10,
         pricePeriod: '/ month',
         description: 'For hobbyists and frequent users.',
         features: [
@@ -45,7 +48,7 @@ const plans = [
     },
     {
         name: 'Standard',
-        price: '$25',
+        price: 25,
         pricePeriod: '/ month',
         description: 'For professionals and power users.',
         features: [
@@ -59,7 +62,7 @@ const plans = [
     },
     {
         name: 'Pro',
-        price: '$60',
+        price: 60,
         pricePeriod: '/ month',
         description: 'For businesses and creative agencies.',
         features: [
@@ -78,12 +81,74 @@ export default function PricingPage() {
   const { user, loading } = useAuth();
   const { userData, loading: userDataLoading } = useUserData();
   const router = useRouter();
+  const { toast } = useToast();
+  const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
+
 
   React.useEffect(() => {
     if (!loading && !user) {
       router.push('/');
     }
   }, [user, loading, router]);
+
+
+  const handlePayment = async (planName: string, amount: number) => {
+    if (!user) return;
+    setIsProcessing(planName);
+
+    try {
+        const order = await createOrder({ amount, currency: 'INR' });
+
+        const options = {
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+            amount: order.amount,
+            currency: order.currency,
+            name: "Grock AI",
+            description: `Upgrade to ${planName} Plan`,
+            order_id: order.id,
+            handler: function (response: any) {
+                // Here you would typically verify the payment signature on your backend
+                // and then update the user's plan in Firestore.
+                // For now, we'll just show a success message.
+                console.log(response);
+                toast({
+                    title: "Payment Successful!",
+                    description: `You have successfully upgraded to the ${planName} plan.`,
+                });
+                // Example: await updateUserPlan(user.uid, planName);
+            },
+            prefill: {
+                name: user.displayName || '',
+                email: user.email || '',
+            },
+            theme: {
+                color: "#8A2BE2"
+            }
+        };
+        
+        const rzp = new (window as any).Razorpay(options);
+        rzp.open();
+
+        rzp.on('payment.failed', function (response: any){
+            console.error(response);
+            toast({
+                variant: 'destructive',
+                title: 'Payment Failed',
+                description: 'Something went wrong. Please try again.',
+            });
+        });
+
+    } catch (error) {
+        console.error("Payment Error: ", error);
+        toast({
+            variant: 'destructive',
+            title: 'Oh no! Something went wrong.',
+            description: 'Could not initiate the payment process. Please try again later.',
+        });
+    } finally {
+        setIsProcessing(null);
+    }
+  };
 
 
   if (loading || !user) {
@@ -97,6 +162,7 @@ export default function PricingPage() {
 
   return (
     <SidebarProvider>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       <Sidebar>
         <SidebarRail />
         <SidebarHeader>
@@ -179,7 +245,7 @@ export default function PricingPage() {
                             </CardHeader>
                             <CardContent className="flex-1">
                                 <div className="mb-6">
-                                    <span className="text-4xl font-bold">{plan.price}</span>
+                                    <span className="text-4xl font-bold">${plan.price}</span>
                                     <span className="text-muted-foreground">{plan.pricePeriod}</span>
                                 </div>
                                 <ul className="space-y-3">
@@ -192,8 +258,15 @@ export default function PricingPage() {
                                 </ul>
                             </CardContent>
                             <CardFooter>
-                                <Button className="w-full" disabled={userData?.plan === plan.name} variant={plan.isPrimary ? 'default' : 'secondary'}>
-                                    {userData?.plan === plan.name ? 'Current Plan' : plan.cta}
+                                <Button 
+                                    className="w-full" 
+                                    disabled={userData?.plan === plan.name || isProcessing !== null} 
+                                    variant={plan.isPrimary ? 'default' : 'secondary'}
+                                    onClick={() => handlePayment(plan.name, plan.price)}
+                                >
+                                    {isProcessing === plan.name ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                    ) : userData?.plan === plan.name ? 'Current Plan' : plan.cta}
                                 </Button>
                             </CardFooter>
                         </Card>
