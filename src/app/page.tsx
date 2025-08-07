@@ -1,4 +1,6 @@
 
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Header } from '@/components/header';
@@ -6,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Brush, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { GrockLogo } from '@/components/icons';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
 
 const features = [
   {
@@ -26,6 +30,18 @@ const features = [
 ];
 
 export default function LandingPage() {
+  const { user, signIn } = useAuth();
+  const router = useRouter();
+
+  const handleGetStarted = async () => {
+    if (user) {
+      router.push('/generate');
+    } else {
+      await signIn();
+      router.push('/generate');
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -39,12 +55,10 @@ export default function LandingPage() {
             <p className="max-w-2xl text-lg md:text-xl text-muted-foreground">
               Welcome to the Grock AI Image Generator, brought to you by Grock Technologies. Transform your text prompts into stunning visual art, logos, and more. Effortlessly create, customize, and download unique images in seconds.
             </p>
-            <Link href="/generate">
-              <Button size="lg" className="font-semibold text-lg group">
-                Start Generating
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
+            <Button size="lg" className="font-semibold text-lg group" onClick={handleGetStarted}>
+              Start Generating
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </Button>
           </div>
           <div className="mt-16 md:mt-24">
              <Card className="max-w-4xl mx-auto shadow-2xl shadow-primary/10">

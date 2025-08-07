@@ -18,6 +18,8 @@ import { fileToDataUri } from '@/lib/utils';
 import { useDropzone } from 'react-dropzone';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Label } from '@/components/ui/label';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
 
 export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
@@ -30,6 +32,15 @@ export default function GeneratorPage() {
   const [isSuggesting, startSuggestionTransition] = useTransition();
   const { toast } = useToast();
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/');
+    }
+  }, [user, loading, router]);
+
 
   const handleGenerate = () => {
     if (!prompt.trim() && referenceImages.length === 0) {
@@ -135,6 +146,15 @@ export default function GeneratorPage() {
   const promptRows = prompt.split('\n').length;
   const showSmallUploadButton = promptRows <= 2;
   const hasReferenceImages = referenceImages.length > 0;
+
+  if (loading || !user) {
+    return (
+      <div className="flex flex-col min-h-screen bg-background items-center justify-center">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Loading your creative space...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
