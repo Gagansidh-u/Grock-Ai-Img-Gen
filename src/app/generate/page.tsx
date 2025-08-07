@@ -151,17 +151,17 @@ export default function GeneratorPage() {
                 <div className="p-2 flex flex-wrap gap-2">
                   {referenceImages.map((image, index) => (
                       <div key={index} className="relative group">
-                        <Image src={image} alt={`Reference ${index + 1}`} width={60} height={60} className="rounded-md object-cover w-auto h-auto" />
+                        <Image src={image} alt={`Reference ${index + 1}`} width={24} height={24} className="rounded-full object-cover w-6 h-6" />
                         <Button
                           variant="destructive"
                           size="icon"
-                          className="absolute -top-2 -right-2 h-5 w-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute -top-1 -right-1 h-4 w-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={(e) => {
                             e.stopPropagation(); 
                             removeReferenceImage(index)
                           }}
                         >
-                          <X className="h-3 w-3" />
+                          <X className="h-2 w-2" />
                         </Button>
                       </div>
                     ))}
