@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       throw error;
     } finally {
-        setLoading(false);
+        // We don't setLoading(false) here because the onAuthStateChanged listener will do it.
     }
   };
 
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       throw error;
     } finally {
-        setLoading(false);
+        // We don't setLoading(false) here because the onAuthStateChanged listener will do it.
     }
   }
 
@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       throw error;
     } finally {
-        setLoading(false);
+        // We don't setLoading(false) here because the onAuthStateChanged listener will do it.
     }
   }
 
@@ -137,3 +137,5 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
+
+    

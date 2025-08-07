@@ -9,10 +9,13 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Skeleton } from './ui/skeleton';
 import { LogOut, User as UserIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { AuthDialog } from './auth-dialog';
+
 
 export function AuthButton() {
   const { user, loading, signOut } = useAuth();
-  const router = useRouter();
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = React.useState(false);
+
 
   if (loading) {
     return (
@@ -27,7 +30,12 @@ export function AuthButton() {
   }
 
   if (!user) {
-    return <Button onClick={() => router.push('/login')} className="w-full">Login</Button>;
+    return (
+      <>
+        <Button onClick={() => setIsAuthDialogOpen(true)} className="w-full">Login</Button>
+        <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
+      </>
+    )
   }
 
   return (
@@ -52,3 +60,5 @@ export function AuthButton() {
     </div>
   );
 }
+
+    

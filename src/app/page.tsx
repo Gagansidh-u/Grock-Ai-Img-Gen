@@ -159,10 +159,21 @@ export default function LandingPage() {
           {/* Footer */}
           <footer className="border-t border-border/50 py-8">
             <div className="container mx-auto px-4 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="flex items-center justify-center gap-2 mb-4">
                     <TryQuadLogo className="h-6 w-6 text-primary"/>
                      <p className="text-lg font-semibold">TryQuad AI</p>
                 </div>
+              <div className="flex justify-center gap-4 mb-4">
+                  <Button variant="link" asChild>
+                    <Link href="/terms-conditions">Terms & Conditions</Link>
+                  </Button>
+                  <Button variant="link" asChild>
+                    <Link href="/privacy-policy">Privacy Policy</Link>
+                  </Button>
+                  <Button variant="link" asChild>
+                    <Link href="/refund-policy">Refund Policy</Link>
+                  </Button>
+              </div>
               <p className="text-muted-foreground">
                 &copy; {new Date().getFullYear()}{' '}
                 <a
@@ -182,3 +193,5 @@ export default function LandingPage() {
     </SidebarProvider>
   );
 }
+
+    
