@@ -227,7 +227,7 @@ export default function PricingPage() {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
-        <SidebarFooter className="p-2 flex flex-col gap-2">
+        <SidebarFooter>
             <CreditUsage />
             <AuthButton />
         </SidebarFooter>
