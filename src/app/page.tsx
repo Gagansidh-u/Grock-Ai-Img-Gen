@@ -7,7 +7,7 @@ import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Brush, Image as ImageIcon, Sparkles, Home, Gem } from 'lucide-react';
-import { GrockLogo } from '@/components/icons';
+import { TryQuadLogo } from '@/components/icons';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
 import { AuthButton } from '@/components/auth-button';
 import { CreditUsage } from '@/components/credit-usage';
@@ -40,10 +40,10 @@ export default function LandingPage() {
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <GrockLogo className="h-7 w-7 text-primary" />
+                <TryQuadLogo className="h-7 w-7 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground tracking-tighter">
-                Grock AI
+                TryQuad AI
               </h1>
             </Link>
         </SidebarHeader>
@@ -80,10 +80,10 @@ export default function LandingPage() {
             <section className="container mx-auto px-4 py-20 md:py-32 text-center">
               <div className="flex flex-col items-center gap-4">
                 <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-400 to-pink-500">
-                  Unleash Your Creativity with Grock AI
+                  Unleash Your Creativity with TryQuad AI
                 </h1>
                 <p className="max-w-2xl text-lg md:text-xl text-muted-foreground">
-                  Welcome to the Grock AI Image Generator, brought to you by Grock Technologies. Transform your text prompts into stunning visual art, logos, and more. Effortlessly create, customize, and download unique images in seconds.
+                  Welcome to the TryQuad AI Image Generator, brought to you by TryQuad Technologies. Transform your text prompts into stunning visual art, logos, and more. Effortlessly create, customize, and download unique images in seconds.
                 </p>
                 <Button size="lg" className="font-semibold text-lg group" asChild>
                   <Link href="/generate">
@@ -138,7 +138,7 @@ export default function LandingPage() {
                  <div className="text-center mb-12">
                   <h2 className="text-3xl md:text-4xl font-bold tracking-tight">From Imagination to Image</h2>
                   <p className="max-w-xl mx-auto mt-2 text-muted-foreground">
-                    Explore a gallery of images created with Grock AI.
+                    Explore a gallery of images created with TryQuad AI.
                   </p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -160,18 +160,18 @@ export default function LandingPage() {
           <footer className="border-t border-border/50 py-8">
             <div className="container mx-auto px-4 text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
-                    <GrockLogo className="h-6 w-6 text-primary"/>
-                     <p className="text-lg font-semibold">Grock AI</p>
+                    <TryQuadLogo className="h-6 w-6 text-primary"/>
+                     <p className="text-lg font-semibold">TryQuad AI</p>
                 </div>
               <p className="text-muted-foreground">
                 &copy; {new Date().getFullYear()}{' '}
                 <a
-                  href="https://www.grock.fun"
+                  href="https://www.tryquad.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:underline hover:text-primary"
                 >
-                  Grock Technologies
+                  TryQuad Technologies
                 </a>
                 . All rights reserved.
               </p>

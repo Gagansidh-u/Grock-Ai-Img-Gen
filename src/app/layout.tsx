@@ -7,8 +7,8 @@ import { AuthProvider } from '@/hooks/use-auth';
 
 
 export const metadata: Metadata = {
-  title: 'Grock AI Image Generator',
-  description: 'Generate stunning images with the power of AI. Built by Grock Technologies.',
+  title: 'TryQuad AI Image Generator',
+  description: 'Generate stunning images with the power of AI. Built by TryQuad Technologies.',
 };
 
 export default function RootLayout({

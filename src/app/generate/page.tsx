@@ -19,7 +19,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Label } from '@/components/ui/label';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { GrockLogo } from '@/components/icons';
+import { TryQuadLogo } from '@/components/icons';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserData } from '@/hooks/use-user-data';
 import { updateImageCount } from '@/lib/firestore';
@@ -175,10 +175,10 @@ export default function GeneratorPage() {
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <GrockLogo className="h-7 w-7 text-primary" />
+                <TryQuadLogo className="h-7 w-7 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground tracking-tighter">
-                Grock AI
+                TryQuad AI
               </h1>
             </Link>
         </SidebarHeader>
@@ -214,7 +214,7 @@ export default function GeneratorPage() {
                 <div className="flex items-center justify-between h-16">
                   <Link href="/" className="flex items-center gap-3">
                     <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                      <GrockLogo className="h-7 w-7 text-primary" />
+                      <TryQuadLogo className="h-7 w-7 text-primary" />
                     </div>
                   </Link>
                   <SidebarTrigger />
@@ -364,7 +364,7 @@ export default function GeneratorPage() {
                                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <a
                                   href={image}
-                                  download={`grock-generated-image-${index + 1}.png`}
+                                  download={`tryquad-generated-image-${index + 1}.png`}
                                   className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all"
                                 >
                                   <Button variant="secondary" size="icon" className="rounded-full h-10 w-10 shadow-lg">

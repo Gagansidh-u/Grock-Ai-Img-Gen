@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from './ui/card';
 import { Separator } from './ui/separator';
-import { GrockLogo } from './icons';
+import { TryQuadLogo } from './icons';
 
 export interface InvoiceData {
   planName: string;
@@ -22,8 +22,8 @@ export function Invoice(props: InvoiceData) {
             <div className="flex justify-between items-start">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <GrockLogo className="h-7 w-7 text-primary"/>
-                        <h1 className="text-2xl font-bold">Grock AI</h1>
+                        <TryQuadLogo className="h-7 w-7 text-primary"/>
+                        <h1 className="text-2xl font-bold">TryQuad AI</h1>
                     </div>
                     <CardDescription>Invoice for your purchase</CardDescription>
                 </div>
@@ -71,7 +71,7 @@ export function Invoice(props: InvoiceData) {
             </div>
         </CardContent>
         <CardFooter className="p-0 mt-8 text-center text-xs text-muted-foreground">
-            Thank you for your purchase! If you have any questions, please contact support@grock.ai.
+            Thank you for your purchase! If you have any questions, please contact support@tryquad.ai.
         </CardFooter>
     </Card>
   );

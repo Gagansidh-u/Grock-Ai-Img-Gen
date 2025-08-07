@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { GrockLogo } from '@/components/icons';
+import { TryQuadLogo } from '@/components/icons';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useForm } from "react-hook-form";
@@ -104,10 +104,10 @@ function LoginPageContent() {
             className="absolute top-4 left-4">
             <Link href="/" className="flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <GrockLogo className="h-7 w-7 text-primary" />
+                <TryQuadLogo className="h-7 w-7 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground tracking-tighter">
-                Grock AI
+                TryQuad AI
               </h1>
             </Link>
         </motion.div>
@@ -121,7 +121,7 @@ function LoginPageContent() {
                     <CardTitle className="text-2xl">{authMode === 'signin' ? 'Welcome Back' : 'Create an Account'}</CardTitle>
                     <CardDescription>
                       {authMode === 'signin' 
-                        ? 'Sign in to continue to Grock AI Image Generator.' 
+                        ? 'Sign in to continue to TryQuad AI Image Generator.' 
                         : 'Fill in the details to create your account.'}
                     </CardDescription>
                 </CardHeader>

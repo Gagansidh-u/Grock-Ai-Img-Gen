@@ -40,7 +40,7 @@ export function AuthButton() {
                 </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-                <p className="text-sm font-medium leading-none truncate">{user.displayName || 'Grock User'}</p>
+                <p className="text-sm font-medium leading-none truncate">{user.displayName || 'TryQuad User'}</p>
                 <p className="text-xs leading-none text-muted-foreground truncate">
                 {user.email}
                 </p>

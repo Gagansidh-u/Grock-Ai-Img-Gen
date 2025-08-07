@@ -5,7 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
 import { Home, Gem, CheckCircle, Loader2, Download, X } from 'lucide-react';
-import { GrockLogo } from '@/components/icons';
+import { TryQuadLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
@@ -130,7 +130,7 @@ export default function PricingPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
         amount: order.amount.toString(),
         currency: order.currency,
-        name: 'Grock AI',
+        name: 'TryQuad AI',
         description: `${plan.name} Plan`,
         order_id: order.id,
         handler: async (response: any) => {
@@ -141,7 +141,7 @@ export default function PricingPage() {
                 amount: plan.price,
                 orderId: response.razorpay_order_id,
                 paymentId: response.razorpay_payment_id,
-                userName: user.displayName || 'Grock User',
+                userName: user.displayName || 'TryQuad User',
                 userEmail: user.email || '',
                 date: new Date(),
             });
@@ -155,7 +155,7 @@ export default function PricingPage() {
           }
         },
         prefill: {
-          name: user.displayName || 'Grock User',
+          name: user.displayName || 'TryQuad User',
           email: user.email || '',
         },
         theme: {
@@ -200,10 +200,10 @@ export default function PricingPage() {
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
             <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-              <GrockLogo className="h-7 w-7 text-primary" />
+              <TryQuadLogo className="h-7 w-7 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-foreground tracking-tighter">
-              Grock AI
+              TryQuad AI
             </h1>
           </Link>
         </SidebarHeader>

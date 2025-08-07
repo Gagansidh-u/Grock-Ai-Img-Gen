@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { GrockLogo } from "@/components/icons";
+import { TryQuadLogo } from "@/components/icons";
 import { SidebarTrigger } from "./ui/sidebar";
 import { AuthButton } from "./auth-button";
 
@@ -12,10 +12,10 @@ export function Header() {
             <SidebarTrigger className="md:hidden" />
             <Link href="/" className="flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <GrockLogo className="h-7 w-7 text-primary" />
+                <TryQuadLogo className="h-7 w-7 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground tracking-tighter">
-                Grock AI
+                TryQuad AI
               </h1>
             </Link>
           </div>
@@ -27,5 +27,3 @@ export function Header() {
     </header>
   );
 }
-
-    
