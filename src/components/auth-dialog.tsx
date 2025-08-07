@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from 'react';
@@ -87,8 +88,8 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md p-0">
-             <Card className="w-full border-none shadow-none">
+        <DialogContent className="sm:max-w-md p-0 rounded-2xl overflow-hidden">
+             <Card className="w-full border-none shadow-none rounded-none">
                 <DialogHeader className="p-6 pb-2">
                     <DialogTitle className="text-2xl text-center">{authMode === 'signin' ? 'Welcome Back' : 'Create an Account'}</DialogTitle>
                     <CardDescription className="text-center">
