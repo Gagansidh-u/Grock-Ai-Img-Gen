@@ -40,12 +40,12 @@ const plans = [
         pricePeriod: '/ month',
         description: 'For hobbyists and frequent users.',
         features: [
-            '100 image generations per month',
+            '100 image credits per month',
             'Standard image quality',
             'Access to all styles',
             'Email support',
         ],
-        cta: 'Upgrade to Basic',
+        cta: 'Buy Basic',
         isPrimary: false,
     },
     {
@@ -54,12 +54,12 @@ const plans = [
         pricePeriod: '/ month',
         description: 'For professionals and power users.',
         features: [
-            '250 image generations per month',
+            '250 image credits per month',
             'High-resolution images',
             'Priority generation queue',
             'Priority support',
         ],
-        cta: 'Upgrade to Standard',
+        cta: 'Buy Standard',
         isPrimary: true,
     },
     {
@@ -68,12 +68,12 @@ const plans = [
         pricePeriod: '/ month',
         description: 'For businesses and creative agencies.',
         features: [
-            'Unlimited image generations',
+            'Unlimited image credits',
             'Highest quality & resolution',
             'Dedicated account manager',
             'API access (coming soon)',
         ],
-        cta: 'Upgrade to Pro',
+        cta: 'Buy Pro',
         isPrimary: false,
     }
 ]
@@ -102,7 +102,7 @@ export default function PricingPage() {
             amount: order.amount,
             currency: order.currency,
             name: "Grock AI",
-            description: `Upgrade to ${planName} Plan`,
+            description: `Purchase ${planName} Plan`,
             order_id: order.id,
             handler: function (response: any) {
                 // Here you would typically verify the payment signature on your backend
@@ -111,7 +111,7 @@ export default function PricingPage() {
                 console.log(response);
                 toast({
                     title: "Payment Successful!",
-                    description: `You have successfully upgraded to the ${planName} plan.`,
+                    description: `You have successfully purchased the ${planName} plan.`,
                 });
                 // Example: await updateUserPlan(user.uid, planName);
             },
