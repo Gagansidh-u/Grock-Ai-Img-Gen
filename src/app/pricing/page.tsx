@@ -2,7 +2,6 @@
 "use client";
 
 import React from 'react';
-import Script from 'next/script';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -14,11 +13,8 @@ import { cn } from '@/lib/utils';
 import { useUserData } from '@/hooks/use-user-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { createOrder } from '@/lib/razorpay';
-import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/header';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
-import useRazorpay from 'react-razorpay';
 
 
 const plans = [
@@ -46,7 +42,7 @@ const plans = [
             'Access to all styles',
             'Email support',
         ],
-        cta: 'Buy Basic',
+        cta: 'Upgrade',
         isPrimary: false,
     },
     {
@@ -60,7 +56,7 @@ const plans = [
             'Priority generation queue',
             'Priority support',
         ],
-        cta: 'Buy Standard',
+        cta: 'Upgrade',
         isPrimary: true,
     },
     {
@@ -74,7 +70,7 @@ const plans = [
             'Dedicated account manager',
             'API access (coming soon)',
         ],
-        cta: 'Buy Pro',
+        cta: 'Upgrade',
         isPrimary: false,
     }
 ]
@@ -84,73 +80,6 @@ export default function PricingPage() {
   const { user, loading } = useAuth();
   const { userData, loading: userDataLoading } = useUserData();
   const router = useRouter();
-  const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
-  const Razorpay = useRazorpay();
-
-
-  const handlePayment = async (planName: string, amount: number) => {
-    if (!user) {
-        router.push('/login?redirect=/pricing');
-        return;
-    }
-    setIsProcessing(planName);
-
-    try {
-        const order = await createOrder({ amount, currency: 'INR' });
-
-        const options = {
-            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-            amount: order.amount.toString(),
-            currency: order.currency,
-            name: "Grock AI",
-            description: `Purchase ${planName} Plan`,
-            order_id: order.id,
-            handler: function (response: any) {
-                // Here you would typically verify the payment signature on your backend
-                // and then update the user's plan in Firestore.
-                // For now, we'll just show a success message.
-                console.log(response);
-                toast({
-                    title: "Payment Successful!",
-                    description: `You have successfully purchased the ${planName} plan.`,
-                });
-                // Example: await updateUserPlan(user.uid, planName);
-            },
-            prefill: {
-                name: user.displayName || '',
-                email: user.email || '',
-            },
-            theme: {
-                color: "#8A2BE2"
-            }
-        };
-        
-        const rzp = new Razorpay(options);
-        
-        rzp.on('payment.failed', function (response: any){
-            console.error(response);
-            toast({
-                variant: 'destructive',
-                title: 'Payment Failed',
-                description: 'Something went wrong. Please try again.',
-            });
-        });
-        
-        rzp.open();
-
-    } catch (error) {
-        console.error("Payment Error: ", error);
-        toast({
-            variant: 'destructive',
-            title: 'Oh no! Something went wrong.',
-            description: 'Could not initiate the payment process. Please try again later.',
-        });
-    } finally {
-        setIsProcessing(null);
-    }
-  };
-
 
   if (loading) {
     return (
@@ -223,7 +152,6 @@ export default function PricingPage() {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <Script src="https://checkout.razorpay.com/v1/checkout.js" />
         <div className="flex flex-col min-h-screen bg-background">
           <Header />
           <main className="flex-1 flex flex-col items-center p-4 md:py-24">
@@ -273,21 +201,15 @@ export default function PricingPage() {
                       <CardFooter>
                         <Button
                           className="w-full"
-                          disabled={
-                            (userData?.plan === plan.name &&
-                              plan.name !== 'Free') ||
-                            isProcessing !== null
-                          }
+                          disabled={ plan.name !== 'Free' }
                           variant={plan.isPrimary ? 'default' : 'secondary'}
-                          onClick={() => handlePayment(plan.name, plan.price)}
+                          onClick={() => {
+                            if (!user) {
+                              router.push('/login?redirect=/pricing');
+                            }
+                          }}
                         >
-                          {isProcessing === plan.name ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : userData?.plan === plan.name ? (
-                            'Current Plan'
-                          ) : (
-                            plan.cta
-                          )}
+                           {userData?.plan === plan.name ? 'Current Plan' : plan.cta}
                         </Button>
                       </CardFooter>
                     </Card>
