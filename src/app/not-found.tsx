@@ -1,3 +1,4 @@
+
 // src/app/not-found.tsx
 'use client';
 
@@ -5,48 +6,90 @@ import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 
 export default function NotFoundPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: '50%', y: '50%' });
 
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+
+  const rotateX = useTransform(mouseY, [0, 1], [-15, 15]);
+  const rotateY = useTransform(mouseX, [0, 1], [15, -15]);
+
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       if (containerRef.current) {
-        const { clientX, clientY } = event;
-        setMousePosition({ x: `${clientX}px`, y: `${clientY}px` });
+        const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+        const x = (event.clientX - left) / width;
+        const y = (event.clientY - top) / height;
+
+        animate(mouseX, x, { type: 'spring', stiffness: 100, damping: 20, restDelta: 0.001 });
+        animate(mouseY, y, { type: 'spring', stiffness: 100, damping: 20, restDelta: 0.001 });
+        
+        setMousePosition({ x: `${event.clientX}px`, y: `${event.clientY}px` });
       }
     };
+    
+    const handleMouseLeave = () => {
+        animate(mouseX, 0.5, { type: 'spring', stiffness: 100, damping: 20 });
+        animate(mouseY, 0.5, { type: 'spring', stiffness: 100, damping: 20 });
+    }
 
-    window.addEventListener('mousemove', handleMouseMove);
+    const currentRef = containerRef.current;
+    if (currentRef) {
+      currentRef.addEventListener('mousemove', handleMouseMove);
+      currentRef.addEventListener('mouseleave', handleMouseLeave);
+    }
+    
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+      if (currentRef) {
+        currentRef.removeEventListener('mousemove', handleMouseMove);
+        currentRef.removeEventListener('mouseleave', handleMouseLeave);
+      }
     };
-  }, []);
+  }, [mouseX, mouseY]);
 
   return (
     <div
       ref={containerRef}
       className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-background text-foreground"
+      style={{ perspective: '1000px' }}
     >
       <motion.div
-        className="pointer-events-none absolute -inset-px z-0 opacity-50"
+        className="pointer-events-none absolute -inset-px z-0 opacity-60"
         style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x} ${mousePosition.y}, hsla(var(--primary), 0.2), transparent 40%)`,
+          background: `radial-gradient(800px circle at ${mousePosition.x} ${mousePosition.y}, hsla(var(--primary), 0.25), transparent 40%)`,
         }}
         animate={{
-            background: `radial-gradient(600px circle at ${mousePosition.x} ${mousePosition.y}, hsla(var(--primary), 0.2), transparent 40%)`
+            background: `radial-gradient(800px circle at ${mousePosition.x} ${mousePosition.y}, hsla(var(--primary), 0.25), transparent 40%)`
         }}
         transition={{ type: 'tween', ease: 'backOut', duration: 1 }}
       />
-      <div className="relative z-10 flex flex-col items-center" style={{ perspective: '800px' }}>
+      <motion.div 
+        className="relative z-10 flex flex-col items-center"
+        style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+      >
         <motion.h1
           className="text-[12rem] font-extrabold tracking-tighter text-primary md:text-[16rem]"
           initial={{ opacity: 0, y: 50, rotateX: -30 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          style={{ textShadow: '0 10px 30px hsla(var(--primary), 0.2)' }}
+          animate={{ 
+            opacity: 1, 
+            y: [0, -15, 0],
+            rotateX: 0,
+            transition: {
+                y: {
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: 'reverse',
+                    ease: 'easeInOut'
+                },
+                opacity: { duration: 0.8, ease: 'easeOut' },
+                rotateX: { duration: 0.8, ease: 'easeOut' },
+            }
+          }}
+          style={{ textShadow: '0 10px 40px hsla(var(--primary), 0.3)' }}
         >
           404
         </motion.h1>
@@ -79,7 +122,7 @@ export default function NotFoundPage() {
             </Link>
           </Button>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 }
