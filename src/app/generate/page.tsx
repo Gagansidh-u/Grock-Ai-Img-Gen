@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { generateImage } from '@/ai/flows/generate-image';
 import { suggestPrompt } from '@/ai/flows/suggest-prompt';
 import { useToast } from '@/hooks/use-toast';
-import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X, Home, Gem, User as UserIcon } from 'lucide-react';
+import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X, Home, Gem } from 'lucide-react';
 import { STYLES, ASPECT_RATIOS, IMAGE_COUNTS } from '@/lib/options';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,6 +26,7 @@ import { updateImageCount } from '@/lib/firestore';
 import { Progress } from '@/components/ui/progress';
 import { AuthButton } from '@/components/auth-button';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 
 export default function GeneratorPage() {
@@ -227,22 +228,29 @@ export default function GeneratorPage() {
               </div>
           </header>
           <main className="flex-1 flex flex-col items-center p-4 md:p-6">
-            <div className="container mx-auto max-w-6xl w-full animate-in">
+            <motion.div 
+              className="container mx-auto max-w-6xl w-full"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
               <div className="flex flex-col gap-6">
                 <div className='text-center flex flex-col gap-2'>
                   <h1 className='text-3xl md:text-4xl font-bold tracking-tight'>AI Image Generator</h1>
                   <p className='text-muted-foreground md:text-lg'>Create stunning visuals with the power of AI.</p>
                 </div>
                  {user && !userDataLoading && userData && (
-                    <Card className="p-4 flex flex-col gap-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">{userData?.plan} Plan</span>
-                        <span className="text-sm text-muted-foreground">
-                          {imageLimit === Infinity ? 'Unlimited' : `${imagesUsed} / ${imageLimit} images`}
-                        </span>
-                      </div>
-                      <Progress value={progressPercentage} />
-                    </Card>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        <Card className="p-4 flex flex-col gap-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium">{userData?.plan} Plan</span>
+                                <span className="text-sm text-muted-foreground">
+                                {imageLimit === Infinity ? 'Unlimited' : `${imagesUsed} / ${imageLimit} images`}
+                                </span>
+                            </div>
+                            <Progress value={progressPercentage} />
+                        </Card>
+                    </motion.div>
                  )}
                  <div {...getRootProps()} className={`relative border-2 rounded-2xl transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-input'}`}>
                   {hasReferenceImages && (
@@ -350,37 +358,43 @@ export default function GeneratorPage() {
                 )}
 
                 {!isGenerating && generatedImages.length > 0 && (
-                    <div className={`grid gap-4 ${generatedImages.length > 1 ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
+                    <motion.div 
+                        className={`grid gap-4 ${generatedImages.length > 1 ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ staggerChildren: 0.1 }}
+                    >
                     {generatedImages.map((image, index) => (
-                      <Card 
-                        key={index}
-                        className="w-full bg-card border-border/80 flex items-center justify-center overflow-hidden shadow-lg"
-                        style={{aspectRatio: aspectRatio.replace(':', ' / ')}}
-                      >
-                        <CardContent className="p-0 h-full w-full relative">
-                          <div className="relative group h-full w-full">
-                            <Image
-                              src={image}
-                              alt={prompt}
-                              fill
-                              className="object-cover transition-transform duration-300 group-hover:scale-105"
-                              sizes="(max-width: 768px) 100vw, 50vw"
-                            />
-                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <a
-                              href={image}
-                              download={`grock-generated-image-${index + 1}.png`}
-                              className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all"
-                            >
-                              <Button variant="secondary" size="icon" className="rounded-full h-10 w-10 shadow-lg">
-                                <Download className="h-5 w-5" />
-                              </Button>
-                            </a>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <motion.div key={index} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                          <Card 
+                            className="w-full bg-card border-border/80 flex items-center justify-center overflow-hidden shadow-lg"
+                            style={{aspectRatio: aspectRatio.replace(':', ' / ')}}
+                          >
+                            <CardContent className="p-0 h-full w-full relative">
+                              <div className="relative group h-full w-full">
+                                <Image
+                                  src={image}
+                                  alt={prompt}
+                                  fill
+                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                  sizes="(max-width: 768px) 100vw, 50vw"
+                                />
+                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <a
+                                  href={image}
+                                  download={`grock-generated-image-${index + 1}.png`}
+                                  className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all"
+                                >
+                                  <Button variant="secondary" size="icon" className="rounded-full h-10 w-10 shadow-lg">
+                                    <Download className="h-5 w-5" />
+                                  </Button>
+                                </a>
+                              </div>
+                            </CardContent>
+                          </Card>
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 )}
                 
                 {!isGenerating && generatedImages.length === 0 && (
@@ -398,14 +412,10 @@ export default function GeneratorPage() {
                   </Card>
                 )}
               </div>
-            </div>
+            </motion.div>
           </main>
         </div>
       </SidebarInset>
     </SidebarProvider>
   );
 }
-
-    
-
-    

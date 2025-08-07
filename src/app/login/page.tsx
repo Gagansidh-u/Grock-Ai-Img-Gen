@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, Suspense, useState } from 'react';
-import { useAuth, AuthCredentials } from '@/hooks/use-auth';
+import { useAuth } from '@/hooks/use-auth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { motion } from 'framer-motion';
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -95,8 +96,12 @@ function LoginPageContent() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-        <div className="absolute top-4 left-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 overflow-hidden">
+        <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }} 
+            className="absolute top-4 left-4">
             <Link href="/" className="flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
                 <GrockLogo className="h-7 w-7 text-primary" />
@@ -105,86 +110,92 @@ function LoginPageContent() {
                 Grock AI
               </h1>
             </Link>
-        </div>
-        <Card className="w-full max-w-sm shadow-2xl shadow-primary/10">
-            <CardHeader className="text-center">
-                <CardTitle className="text-2xl">{authMode === 'signin' ? 'Welcome Back' : 'Create an Account'}</CardTitle>
-                <CardDescription>
-                  {authMode === 'signin' 
-                    ? 'Sign in to continue to Grock AI Image Generator.' 
-                    : 'Fill in the details to create your account.'}
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-               <Form {...form}>
-                 <form onSubmit={form.handleSubmit(handleAuthAction)} className="space-y-4">
-                   <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input placeholder="name@example.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="••••••••" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full" disabled={isSigningIn}>
-                       {isSigningIn && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                       {authMode === 'signin' ? 'Sign In' : 'Sign Up'}
-                    </Button>
-                 </form>
-               </Form>
-              
-               <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">
-                      Or continue with
-                      </span>
-                  </div>
-                </div>
+        </motion.div>
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+        >
+            <Card className="w-full max-w-sm shadow-2xl shadow-primary/10">
+                <CardHeader className="text-center">
+                    <CardTitle className="text-2xl">{authMode === 'signin' ? 'Welcome Back' : 'Create an Account'}</CardTitle>
+                    <CardDescription>
+                      {authMode === 'signin' 
+                        ? 'Sign in to continue to Grock AI Image Generator.' 
+                        : 'Fill in the details to create your account.'}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                   <Form {...form}>
+                     <form onSubmit={form.handleSubmit(handleAuthAction)} className="space-y-4">
+                       <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Email</FormLabel>
+                              <FormControl>
+                                <Input placeholder="name@example.com" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="••••••••" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button type="submit" className="w-full" disabled={isSigningIn}>
+                           {isSigningIn && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                           {authMode === 'signin' ? 'Sign In' : 'Sign Up'}
+                        </Button>
+                     </form>
+                   </Form>
+                  
+                   <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-background px-2 text-muted-foreground">
+                          Or continue with
+                          </span>
+                      </div>
+                    </div>
 
-                <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={handleGoogleSignIn}
-                    disabled={isSigningIn}
-                >
-                    {isSigningIn && form.formState.isSubmitting ? (
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    ) : (
-                        <GoogleIcon className="mr-2 h-5 w-5" />
-                    )}
-                    Google
-                </Button>
-                
-                 <p className="text-center text-sm text-muted-foreground">
-                    {authMode === 'signin' ? "Don't have an account?" : "Already have an account?"}{' '}
-                    <Button variant="link" onClick={toggleAuthMode} className="p-0 h-auto">
-                        {authMode === 'signin' ? "Sign Up" : "Sign In"}
+                    <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={handleGoogleSignIn}
+                        disabled={isSigningIn}
+                    >
+                        {isSigningIn && form.formState.isSubmitting ? (
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        ) : (
+                            <GoogleIcon className="mr-2 h-5 w-5" />
+                        )}
+                        Google
                     </Button>
-                </p>
+                    
+                     <p className="text-center text-sm text-muted-foreground">
+                        {authMode === 'signin' ? "Don't have an account?" : "Already have an account?"}{' '}
+                        <Button variant="link" onClick={toggleAuthMode} className="p-0 h-auto">
+                            {authMode === 'signin' ? "Sign Up" : "Sign In"}
+                        </Button>
+                    </p>
 
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        </motion.div>
     </div>
   );
 }

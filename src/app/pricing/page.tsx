@@ -4,10 +4,11 @@
 import React from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
-import { Home, Gem, CheckCircle, Loader2 } from 'lucide-react';
+import { Home, Gem, CheckCircle, Loader2, Download, X } from 'lucide-react';
 import { GrockLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { Header } from '@/components/header';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
@@ -18,6 +19,10 @@ import { useRouter } from 'next/navigation';
 import { updateUserPlan, UserProfile } from '@/lib/firestore';
 import { AuthButton } from '@/components/auth-button';
 import { useUserData } from '@/hooks/use-user-data';
+import { motion } from 'framer-motion';
+import { Invoice, InvoiceData } from '@/components/invoice';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 declare const window: any;
 
@@ -82,17 +87,31 @@ const plans = [
 
 export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = React.useState<string | null>(null);
+  const [invoiceData, setInvoiceData] = React.useState<InvoiceData | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
   const { userData } = useUserData();
   const router = useRouter();
+  const invoiceRef = React.useRef(null);
+
+  const handleDownloadInvoice = () => {
+    const input = invoiceRef.current;
+    if (!input) return;
+
+    html2canvas(input, { scale: 2, backgroundColor: null }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'px', [canvas.width, canvas.height]);
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`invoice-${invoiceData?.orderId}.pdf`);
+    });
+  };
 
   const handlePayment = async (plan: typeof plans[0]) => {
     setLoadingPlan(plan.name);
 
     if (!user) {
-      router.push('/login?redirect=/pricing');
-      setLoadingPlan(null);
+      router.push(`/login?redirect=/pricing`);
+      // No need to setLoadingPlan(null) here as the page will redirect
       return;
     }
 
@@ -116,11 +135,15 @@ export default function PricingPage() {
         handler: async (response: any) => {
           try {
             await updateUserPlan(user.uid, plan.name as UserProfile['plan']);
-            toast({
-              title: 'Payment Successful!',
-              description: `You have successfully upgraded to the ${plan.name} plan.`,
+            setInvoiceData({
+                planName: plan.name,
+                amount: plan.price,
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                userName: user.displayName || 'Grock User',
+                userEmail: user.email || '',
+                date: new Date(),
             });
-            router.push('/generate');
           } catch(err) {
             console.error(err);
              toast({
@@ -211,7 +234,12 @@ export default function PricingPage() {
         <div className="flex flex-col min-h-screen bg-background">
           <Header />
           <main className="flex-1 flex flex-col items-center p-4 md:py-24">
-            <div className="container mx-auto max-w-6xl w-full animate-in">
+            <motion.div 
+                className="container mx-auto max-w-6xl w-full"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
               <div className="flex flex-col gap-8">
                 <div className="text-center flex flex-col gap-2">
                   <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
@@ -223,66 +251,93 @@ export default function PricingPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {plans.map((plan) => (
-                    <Card
-                      key={plan.name}
-                      className={cn(
-                        'flex flex-col',
-                        plan.isPrimary &&
-                          'border-primary shadow-lg shadow-primary/10'
-                      )}
+                  {plans.map((plan, index) => (
+                    <motion.div
+                        key={plan.name}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
                     >
-                      <CardHeader>
-                        <CardTitle>{plan.name}</CardTitle>
-                        <CardDescription>{plan.description}</CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex-1">
-                        <div className="mb-6">
-                          <span className="text-4xl font-bold">
-                            ₹{plan.price}
-                          </span>
-                          <span className="text-muted-foreground">
-                            {plan.pricePeriod}
-                          </span>
-                        </div>
-                        <ul className="space-y-3">
-                          {plan.features.map((feature, i) => (
-                            <li key={i} className="flex items-center gap-2">
-                              <CheckCircle className="h-5 w-5 text-primary" />
-                              <span className="text-sm">{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                      <CardFooter>
-                         <Button
-                          className="w-full"
-                          disabled={loadingPlan === plan.name || (userData?.plan === plan.name)}
-                          variant={plan.isPrimary ? 'default' : 'secondary'}
-                           onClick={() => {
-                            if (plan.name !== 'Free') {
-                                handlePayment(plan);
-                            }
-                           }}
+                        <Card
+                        className={cn(
+                            'flex flex-col h-full',
+                            plan.isPrimary &&
+                            'border-primary shadow-lg shadow-primary/10'
+                        )}
                         >
-                           {loadingPlan === plan.name ? (
-                            <Loader2 className="animate-spin" />
-                            ) : userData?.plan === plan.name ? (
-                            'Current Plan'
-                            ) : (
-                            plan.cta
-                            )}
-                        </Button>
-                      </CardFooter>
-                    </Card>
+                        <CardHeader>
+                            <CardTitle>{plan.name}</CardTitle>
+                            <CardDescription>{plan.description}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1">
+                            <div className="mb-6">
+                            <span className="text-4xl font-bold">
+                                ₹{plan.price}
+                            </span>
+                            <span className="text-muted-foreground">
+                                {plan.pricePeriod}
+                            </span>
+                            </div>
+                            <ul className="space-y-3">
+                            {plan.features.map((feature, i) => (
+                                <li key={i} className="flex items-center gap-2">
+                                <CheckCircle className="h-5 w-5 text-primary" />
+                                <span className="text-sm">{feature}</span>
+                                </li>
+                            ))}
+                            </ul>
+                        </CardContent>
+                        <CardFooter>
+                            <Button
+                            className="w-full"
+                            disabled={loadingPlan === plan.name || (userData?.plan === plan.name)}
+                            variant={plan.isPrimary ? 'default' : 'secondary'}
+                            onClick={() => {
+                                if (plan.name !== 'Free') {
+                                    handlePayment(plan);
+                                }
+                            }}
+                            >
+                            {loadingPlan === plan.name ? (
+                                <Loader2 className="animate-spin" />
+                                ) : userData?.plan === plan.name ? (
+                                'Current Plan'
+                                ) : (
+                                plan.cta
+                                )}
+                            </Button>
+                        </CardFooter>
+                        </Card>
+                    </motion.div>
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           </main>
         </div>
       </SidebarInset>
     </SidebarProvider>
+    <Dialog open={!!invoiceData} onOpenChange={(open) => !open && setInvoiceData(null)}>
+        <DialogContent className="max-w-2xl bg-card">
+            <DialogHeader>
+            <DialogTitle className="text-2xl">Payment Successful!</DialogTitle>
+             <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+                <X className="h-4 w-4" />
+                <span className="sr-only">Close</span>
+            </DialogClose>
+            </DialogHeader>
+            <div ref={invoiceRef} className="p-6 bg-background rounded-lg">
+               {invoiceData && <Invoice {...invoiceData} />}
+            </div>
+            <div className="flex justify-end gap-4 mt-4">
+                <Button variant="outline" onClick={() => setInvoiceData(null)}>Close</Button>
+                <Button onClick={handleDownloadInvoice}>
+                    <Download className="mr-2 h-4 w-4"/>
+                    Download Invoice
+                </Button>
+            </div>
+        </DialogContent>
+    </Dialog>
     </>
   )
 }
