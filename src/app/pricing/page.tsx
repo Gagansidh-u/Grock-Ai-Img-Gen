@@ -195,7 +195,7 @@ export default function PricingPage() {
         src="https://checkout.razorpay.com/v1/checkout.js"
       />
      <SidebarProvider>
-      <Sidebar>
+      <Sidebar side="left">
         <SidebarRail />
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">

@@ -35,7 +35,7 @@ export default function LandingPage() {
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar side="left">
         <SidebarRail />
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export default function LandingPage() {
                  <Card className="max-w-4xl mx-auto shadow-2xl shadow-primary/10">
                     <CardContent className="p-2">
                         <Image
-                            src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/f3864b6d-bd81-4d5d-b541-356d65114494.jpeg"
+                            src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/f3864b6d-bd81-4d5d-b541-356d65114494.jpeg?raw=true"
                             alt="AI generated image of a futuristic landscape"
                             width={1200}
                             height={600}
@@ -142,14 +142,14 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/ba4ffc06-f9e9-4cdb-b15b-bd9497b0005d.jpeg" alt="Fantasy castle" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/e7511167-627d-4861-8b8b-499f5bf1e01e.jpeg" alt="Anime character" width={400} height={600} className="rounded-lg object-cover w-full h-full row-span-2 hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/b01b75e9-fd97-4b03-ad7c-e4693f18077f.jpeg" alt="Cyberpunk city" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/Lilith.jpeg" alt="3D model car" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/Goku.jpeg" alt="Photorealistic animal" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/9c84c2ef-ecf6-4f4c-ad3d-a26313858da7.jpeg" alt="Vaporwave sunset" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/1467fd58-8982-4b29-a314-cf481ea61e63.jpeg" alt="Abstract art" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/a9dcd4d5-0380-4ed7-9201-8e59ba2618c2.jpeg" alt="Abstract art" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/ba4ffc06-f9e9-4cdb-b15b-bd9497b0005d.jpeg?raw=true" alt="Fantasy castle" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/e7511167-627d-4861-8b8b-499f5bf1e01e.jpeg?raw=true" alt="Anime character" width={400} height={600} className="rounded-lg object-cover w-full h-full row-span-2 hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/b01b75e9-fd97-4b03-ad7c-e4693f18077f.jpeg?raw=true" alt="Cyberpunk city" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/Lilith.jpeg?raw=true" alt="3D model car" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/Goku.jpeg?raw=true" alt="Photorealistic animal" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/9c84c2ef-ecf6-4f4c-ad3d-a26313858da7.jpeg?raw=true" alt="Vaporwave sunset" width={400} height={300} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/1467fd58-8982-4b29-a314-cf481ea61e63.jpeg?raw=true" alt="Abstract art" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/a9dcd4d5-0380-4ed7-9201-8e59ba2618c2.jpeg?raw=true" alt="Abstract art" width={400} height={600} className="rounded-lg object-cover w-full h-full hover:scale-105 transition-transform duration-300" />
                 </div>
               </div>
             </section>
@@ -163,7 +163,7 @@ export default function LandingPage() {
                     <TryQuadLogo className="h-6 w-6 text-primary"/>
                      <p className="text-lg font-semibold">TryQuad AI</p>
                 </div>
-              <div className="flex justify-center gap-4 mb-4">
+              <div className="flex flex-wrap justify-center gap-4 mb-4">
                   <Button variant="link" asChild>
                     <Link href="/terms-conditions">Terms & Conditions</Link>
                   </Button>
@@ -193,5 +193,3 @@ export default function LandingPage() {
     </SidebarProvider>
   );
 }
-
-    

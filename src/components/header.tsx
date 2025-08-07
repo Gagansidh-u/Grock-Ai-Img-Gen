@@ -10,7 +10,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
             <SidebarTrigger className="md:hidden" />
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/" className="hidden md:flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
                 <TryQuadLogo className="h-7 w-7 text-primary" />
               </div>

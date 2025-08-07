@@ -170,7 +170,7 @@ export default function GeneratorPage() {
   
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar side="left">
         <SidebarRail />
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
@@ -272,8 +272,8 @@ export default function GeneratorPage() {
                   </div>
                 </div>
                 
-                <div className="flex justify-center items-center gap-4">
-                  <Button variant="ghost" size="lg" onClick={handleSuggestPrompt} disabled={isPending} className="group rounded-full">
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+                  <Button variant="ghost" size="lg" onClick={handleSuggestPrompt} disabled={isPending} className="group rounded-full w-full sm:w-auto">
                     {isSuggesting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Wand2 className="h-5 w-5 mr-2 text-muted-foreground group-hover:text-primary transition-colors" />}
                     Inspire Me
                   </Button>
@@ -281,7 +281,7 @@ export default function GeneratorPage() {
                     onClick={handleGenerate}
                     disabled={isPending}
                     size="lg"
-                    className="rounded-full font-semibold"
+                    className="rounded-full font-semibold w-full sm:w-auto"
                   >
                     <Sparkles className="h-4 w-4 mr-2" />
                     {isGenerating ? 'Generating...' : 'Generate'}
@@ -328,7 +328,7 @@ export default function GeneratorPage() {
               </div>
               <div className="mt-8">
                 {isGenerating && (
-                  <div className={`grid gap-4 ${numberOfImages > 1 ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
+                  <div className={`grid gap-4 ${numberOfImages > 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
                      {Array.from({ length: numberOfImages }).map((_, i) => (
                       <Card key={i} className="w-full bg-card border-border/80 flex items-center justify-center overflow-hidden" style={{aspectRatio: aspectRatio.replace(':', ' / ')}}>
                         <CardContent className="p-0 h-full w-full relative">
@@ -341,7 +341,7 @@ export default function GeneratorPage() {
 
                 {!isGenerating && generatedImages.length > 0 && (
                     <motion.div 
-                        className={`grid gap-4 ${generatedImages.length > 1 ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}
+                        className={`grid gap-4 ${generatedImages.length > 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ staggerChildren: 0.1 }}
