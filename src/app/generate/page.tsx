@@ -110,11 +110,13 @@ export default function GeneratorPage() {
     setReferenceImages(prev => [...prev, ...dataUris]);
   }, [referenceImages.length, toast]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open: openFileDialog } = useDropzone({
     onDrop,
     accept: { 'image/*': ['.jpeg', '.png', '.gif', '.webp'] },
     multiple: true,
     maxFiles: 10,
+    noClick: true,
+    noKeyboard: true,
   });
 
   const removeReferenceImage = (index: number) => {
@@ -130,6 +132,7 @@ export default function GeneratorPage() {
   };
 
   const isPending = isGenerating || isSuggesting;
+  const promptRows = prompt.split('\n').length;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -147,24 +150,33 @@ export default function GeneratorPage() {
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="A vibrant synthwave cityscape..."
-                className="pl-4 pr-48 min-h-[52px] h-auto resize-none py-3 shadow-lg rounded-2xl"
-                rows={prompt.split('\n').length > 7 ? prompt.split('\n').length : 7}
+                className="pl-4 pr-4 min-h-[52px] h-auto resize-none py-3 shadow-lg rounded-2xl pb-10"
+                rows={promptRows < 20 ? promptRows : 20}
                 disabled={isPending}
               />
-              <div className="absolute right-2 top-3 flex items-center gap-2">
-                <Button variant="ghost" size="icon" onClick={handleSuggestPrompt} disabled={isPending} className="h-9 w-9 group rounded-full">
-                  {isSuggesting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Wand2 className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />}
-                </Button>
-                <Button
-                  onClick={handleGenerate}
-                  disabled={isPending}
-                  className="h-9 rounded-full font-semibold"
-                >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  {isGenerating ? 'Generating...' : 'Generate'}
-                </Button>
+              <div className="absolute left-2 bottom-3 flex items-center gap-2">
+                 <Button variant="ghost" size="icon" onClick={openFileDialog} disabled={isPending} className="h-9 w-9 group rounded-full">
+                   <Upload className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                 </Button>
               </div>
             </div>
+            
+            <div className="flex justify-center items-center gap-4">
+              <Button variant="ghost" size="lg" onClick={handleSuggestPrompt} disabled={isPending} className="group rounded-full">
+                {isSuggesting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Wand2 className="h-5 w-5 mr-2 text-muted-foreground group-hover:text-primary transition-colors" />}
+                Inspire Me
+              </Button>
+              <Button
+                onClick={handleGenerate}
+                disabled={isPending}
+                size="lg"
+                className="rounded-full font-semibold"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                {isGenerating ? 'Generating...' : 'Generate'}
+              </Button>
+            </div>
+
 
             {/* Image Upload Section */}
             <div className="space-y-4">
@@ -301,3 +313,5 @@ export default function GeneratorPage() {
     </div>
   );
 }
+
+    
