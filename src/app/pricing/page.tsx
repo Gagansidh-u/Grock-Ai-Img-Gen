@@ -160,7 +160,7 @@ export default function PricingPage() {
 
   return (
     <SidebarProvider>
-      <Sidebar>
+       <Sidebar>
         <SidebarRail />
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
