@@ -24,6 +24,7 @@ import { Invoice, InvoiceData } from '@/components/invoice';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { CreditUsage } from '@/components/credit-usage';
+import { AuthDialog } from '@/components/auth-dialog';
 
 declare const window: any;
 
@@ -89,6 +90,7 @@ const plans = [
 export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = React.useState<string | null>(null);
   const [invoiceData, setInvoiceData] = React.useState<InvoiceData | null>(null);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = React.useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
   const { userData } = useUserData();
@@ -111,8 +113,8 @@ export default function PricingPage() {
     setLoadingPlan(plan.name);
 
     if (!user) {
-      router.push(`/login?redirect=/pricing`);
-      // No need to setLoadingPlan(null) here as the page will redirect
+      setIsAuthDialogOpen(true);
+      setLoadingPlan(null);
       return;
     }
 
@@ -344,6 +346,7 @@ export default function PricingPage() {
         </div>
       </SidebarInset>
     </SidebarProvider>
+    <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
     <Dialog open={!!invoiceData} onOpenChange={(open) => !open && setInvoiceData(null)}>
         <DialogContent className="max-w-2xl bg-card">
             <DialogHeader>
@@ -368,5 +371,3 @@ export default function PricingPage() {
     </>
   )
 }
-
-    
