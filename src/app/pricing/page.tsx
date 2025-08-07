@@ -90,9 +90,9 @@ export default function PricingPage() {
     setLoadingPlan(plan.name);
 
     if (!user) {
-        router.push('/login?redirect=/pricing');
-        setLoadingPlan(null);
-        return;
+      router.push('/login?redirect=/pricing');
+      setLoadingPlan(null);
+      return;
     }
 
     try {
@@ -100,11 +100,11 @@ export default function PricingPage() {
         amount: plan.price * 100, // Amount in paise
         currency: 'INR',
       });
-      
+
       if (!order || !order.id) {
         throw new Error('Order creation failed');
       }
-      
+
       if (!Razorpay) {
         toast({ variant: 'destructive', title: 'Error', description: 'Razorpay SDK not loaded.' });
         setLoadingPlan(null);
@@ -119,12 +119,21 @@ export default function PricingPage() {
         description: `${plan.name} Plan`,
         order_id: order.id,
         handler: async (response: any) => {
+          try {
             await updateUserPlan(user.uid, plan.name as UserProfile['plan']);
             toast({
-                title: 'Payment Successful!',
-                description: `You have successfully upgraded to the ${plan.name} plan.`,
+              title: 'Payment Successful!',
+              description: `You have successfully upgraded to the ${plan.name} plan.`,
             });
             router.push('/generate');
+          } catch(err) {
+            console.error(err);
+             toast({
+              variant: 'destructive',
+              title: 'Update failed',
+              description: 'Your payment was successful but we failed to update your plan. Please contact support.',
+            });
+          }
         },
         prefill: {
           name: user.displayName || 'Grock User',
@@ -135,7 +144,7 @@ export default function PricingPage() {
         },
       };
 
-      const rzp = new Razorpay(options);
+      const rzp = new (Razorpay as any)(options);
 
       rzp.on('payment.failed', function (response: any) {
         toast({
