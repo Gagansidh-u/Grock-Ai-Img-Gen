@@ -97,7 +97,7 @@ export default function LandingPage() {
                     <CardContent className="p-2">
                         <Image
                             src="https://placehold.co/1200x600.png"
-                            data-ai-hint="futuristic robot landscape"
+                            data-ai-hint="dynamic abstract art"
                             alt="AI generated image of a futuristic landscape"
                             width={1200}
                             height={600}
