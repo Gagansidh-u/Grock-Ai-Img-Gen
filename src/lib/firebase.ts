@@ -1,7 +1,16 @@
 
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, User } from "firebase/auth";
+import { 
+    getAuth, 
+    GoogleAuthProvider, 
+    signInWithPopup, 
+    onAuthStateChanged, 
+    User,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut
+} from "firebase/auth";
 import { getFirestore } from 'firebase/firestore';
 
 
@@ -22,5 +31,15 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-export { app, auth, db, googleProvider, signInWithPopup, onAuthStateChanged };
+export { 
+    app, 
+    auth, 
+    db, 
+    googleProvider, 
+    signInWithPopup, 
+    onAuthStateChanged,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut
+};
 export type { User };

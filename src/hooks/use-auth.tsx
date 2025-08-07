@@ -3,14 +3,33 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { auth, onAuthStateChanged, User, signInWithPopup, googleProvider } from '@/lib/firebase';
+import { 
+  auth, 
+  onAuthStateChanged, 
+  User, 
+  signInWithPopup, 
+  googleProvider,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut
+} from '@/lib/firebase';
 import { useToast } from './use-toast';
 import { createUserProfile, getUserProfile } from '@/lib/firestore';
+import * as z from 'zod';
+
+const authCredentialsSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+export type AuthCredentials = z.infer<typeof authCredentialsSchema>;
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signInWithEmailPassword: (credentials: AuthCredentials) => Promise<void>;
+  signUpWithEmailPassword: (credentials: AuthCredentials) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -29,17 +48,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const signIn = async () => {
+  const handleUserCreation = async (user: User) => {
+    const userProfile = await getUserProfile(user.uid);
+    if (!userProfile) {
+      await createUserProfile(user);
+    }
+  }
+
+  const signInWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      if (user) {
-        // Check if user profile exists, if not create one.
-        const userProfile = await getUserProfile(user.uid);
-        if (!userProfile) {
-          await createUserProfile(user);
-        }
-      }
+      await handleUserCreation(result.user);
     } catch (error: any) {
       console.error("Error signing in with Google: ", error);
       toast({
@@ -47,14 +66,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         title: 'Authentication Failed',
         description: error.message,
       });
-      // Ensure loading is false on error so user isn't stuck.
-      setLoading(false);
+      throw error;
     }
   };
 
+  const signUpWithEmailPassword = async (credentials: AuthCredentials) => {
+    try {
+      const result = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
+      await handleUserCreation(result.user);
+    } catch (error: any) {
+       console.error("Error signing up: ", error);
+       toast({
+        variant: 'destructive',
+        title: 'Sign Up Failed',
+        description: error.message,
+      });
+      throw error;
+    }
+  }
+
+  const signInWithEmailPassword = async (credentials: AuthCredentials) => {
+     try {
+      await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+    } catch (error: any) {
+       console.error("Error signing in: ", error);
+       toast({
+        variant: 'destructive',
+        title: 'Sign In Failed',
+        description: error.message,
+      });
+      throw error;
+    }
+  }
+
+
   const signOut = async () => {
     try {
-      await auth.signOut();
+      await firebaseSignOut(auth);
       setUser(null);
     } catch (error: any) {
       console.error("Error signing out: ", error);
@@ -67,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signInWithGoogle, signInWithEmailPassword, signUpWithEmailPassword, signOut }}>
       {children}
     </AuthContext.Provider>
   );
