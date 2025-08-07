@@ -96,7 +96,7 @@ export default function LandingPage() {
                  <Card className="max-w-4xl mx-auto shadow-2xl shadow-primary/10">
                     <CardContent className="p-2">
                         <Image
-                            src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/dfefa341-7004-4df6-8f56-9bd8c9c8dc06.jpeg"
+                            src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/f3864b6d-bd81-4d5d-b541-356d65114494.jpeg"
                             alt="AI generated image of a futuristic landscape"
                             width={1200}
                             height={600}
