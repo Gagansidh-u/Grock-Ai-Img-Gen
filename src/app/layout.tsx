@@ -9,7 +9,7 @@ import { AuthProvider } from '@/hooks/use-auth';
 const APP_NAME = "TryQuad AI";
 const APP_DEFAULT_TITLE = "Tryquad AI - Turn Your Imagination into Images";
 const APP_TITLE_TEMPLATE = "%s | TryQuad AI";
-const APP_DESCRIPTION = "Transform your ideas into reality with TryQuad AI. Generate custom, high-quality images, art, and logos from text prompts. Unleash your creativity today!";
+const APP_DESCRIPTION = "Generate stunning images from text prompts with Tryquad Al. Fast, creative, and intuitive - turn your ideas into art using advanced Al.";
 
 
 export const metadata: Metadata = {
