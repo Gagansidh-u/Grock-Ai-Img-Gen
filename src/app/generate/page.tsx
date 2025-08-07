@@ -26,6 +26,7 @@ import { motion } from 'framer-motion';
 import { CreditUsage } from '@/components/credit-usage';
 import { Header } from '@/components/header';
 import { updateImageCount } from '@/lib/firestore';
+import { AuthDialog } from '@/components/auth-dialog';
 
 export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
@@ -36,11 +37,17 @@ export default function GeneratorPage() {
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [isGenerating, startGenerationTransition] = useTransition();
   const [isSuggesting, startSuggestionTransition] = useTransition();
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
   const { userData } = useUserData();
 
   const handleGenerate = () => {
+    if (!user) {
+        setIsAuthDialogOpen(true);
+        return;
+    }
+
     if (!prompt.trim() && referenceImages.length === 0) {
       toast({
         variant: 'destructive',
@@ -50,7 +57,7 @@ export default function GeneratorPage() {
       return;
     }
 
-    if (user && userData) {
+    if (userData) {
       if (userData.plan !== 'Pro' && userData.imageCredits < numberOfImages) {
         toast({
           variant: 'destructive',
@@ -163,6 +170,7 @@ export default function GeneratorPage() {
   const hasReferenceImages = referenceImages.length > 0;
   
   return (
+    <>
     <SidebarProvider>
       <Sidebar side="left">
         <SidebarRail />
@@ -407,5 +415,7 @@ export default function GeneratorPage() {
         </div>
       </SidebarInset>
     </SidebarProvider>
+    <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
+    </>
   );
 }
