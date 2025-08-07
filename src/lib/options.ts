@@ -13,14 +13,14 @@ export const STYLES = [
 ];
 
 export const ASPECT_RATIOS = [
-  { value: '1:1', label: 'Square (1:1)' },
-  { value: '16:9', label: 'Landscape (16:9)' },
-  { value: '9:16', label: 'Portrait (9:16)' },
+  { value: '1:1', label: '1:1' },
+  { value: '16:9', label: '16:9' },
+  { value: '9:16', label: '9:16' },
 ];
 
 export const IMAGE_COUNTS = [
-    { value: 1, label: '1 Image' },
-    { value: 2, label: '2 Images' },
-    { value: 3, label: '3 Images' },
-    { value: 4, label: '4 Images' },
+    { value: 1, label: '1' },
+    { value: 2, label: '2' },
+    { value: 3, label: '3' },
+    { value: 4, label: '4' },
 ];

@@ -16,6 +16,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { fileToDataUri } from '@/lib/utils';
 import { useDropzone } from 'react-dropzone';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Label } from '@/components/ui/label';
 
 export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
@@ -56,16 +58,28 @@ export default function GeneratorPage() {
     });
   };
 
+  const handleAspectRatioChange = (value: string) => {
+    if (value) {
+      setAspectRatio(value);
+    }
+  };
+  
+  const handleImageCountChange = (value: string) => {
+    if (value) {
+      setNumberOfImages(Number(value));
+    }
+  };
+
   useEffect(() => {
     if (initialRenderComplete) {
-      if (prompt.trim() || referenceImages.length > 0) {
+      if ((prompt.trim() || referenceImages.length > 0) && (aspectRatio || numberOfImages)) {
         handleGenerate();
       }
     } else {
       setInitialRenderComplete(true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [aspectRatio]);
+  }, [aspectRatio, numberOfImages]);
 
   const handleSuggestPrompt = () => {
     startSuggestionTransition(async () => {
@@ -134,7 +148,7 @@ export default function GeneratorPage() {
                 onKeyDown={handleKeyDown}
                 placeholder="A vibrant synthwave cityscape..."
                 className="pl-4 pr-48 min-h-[52px] h-auto resize-none py-3 shadow-lg rounded-2xl"
-                rows={prompt.split('\n').length > 7 ? prompt.split('\n').length : 2}
+                rows={prompt.split('\n').length > 7 ? prompt.split('\n').length : 7}
                 disabled={isPending}
               />
               <div className="absolute right-2 top-3 flex items-center gap-2">
@@ -182,44 +196,42 @@ export default function GeneratorPage() {
                 </div>
               )}
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-               <Select value={style} onValueChange={setStyle} disabled={isPending}>
-                <SelectTrigger className="w-full h-11 rounded-full shadow-sm">
-                  <SelectValue placeholder="Select a style" />
-                </SelectTrigger>
-                <SelectContent>
-                  {STYLES.map((s) => (
-                    <SelectItem key={s.value} value={s.value}>
-                      {s.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-               <Select value={aspectRatio} onValueChange={setAspectRatio} disabled={isPending}>
-                <SelectTrigger className="w-full h-11 rounded-full shadow-sm">
-                  <SelectValue placeholder="Select an aspect ratio" />
-                </Trigger>
-                <SelectContent>
-                   {ASPECT_RATIOS.map((r) => (
-                    <SelectItem key={r.value} value={r.value}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-col gap-2">
+                 <Label>Style</Label>
+                 <Select value={style} onValueChange={setStyle} disabled={isPending}>
+                  <SelectTrigger className="w-full h-11 rounded-full shadow-sm">
+                    <SelectValue placeholder="Select a style" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STYLES.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>
+                        {s.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label>Aspect Ratio</Label>
+                <ToggleGroup type="single" value={aspectRatio} onValueChange={handleAspectRatioChange} disabled={isPending} className="w-full grid grid-cols-3 gap-2">
+                  {ASPECT_RATIOS.map((r) => (
+                    <ToggleGroupItem key={r.value} value={r.value} className="h-11 rounded-lg shadow-sm data-[state=on]:border-primary data-[state=on]:border-2">
                       {r.label}
-                    </SelectItem>
+                    </ToggleGroupItem>
                   ))}
-                </SelectContent>
-              </Select>
-              <Select value={String(numberOfImages)} onValueChange={(v) => setNumberOfImages(Number(v))} disabled={isPending}>
-                <SelectTrigger className="w-full h-11 rounded-full shadow-sm">
-                  <SelectValue placeholder="Number of images" />
-                </SelectTrigger>
-                <SelectContent>
+                </ToggleGroup>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label>Number of Images</Label>
+                <ToggleGroup type="single" value={String(numberOfImages)} onValueChange={handleImageCountChange} disabled={isPending} className="w-full grid grid-cols-4 gap-2">
                   {IMAGE_COUNTS.map((c) => (
-                    <SelectItem key={c.value} value={String(c.value)}>
+                    <ToggleGroupItem key={c.value} value={String(c.value)} className="h-11 rounded-lg shadow-sm data-[state=on]:border-primary data-[state=on]:border-2">
                       {c.label}
-                    </SelectItem>
+                    </ToggleGroupItem>
                   ))}
-                </SelectContent>
-              </Select>
+                </ToggleGroup>
+              </div>
             </div>
           </div>
           <div className="mt-8">
