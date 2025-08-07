@@ -2,10 +2,30 @@
 import Link from 'next/link';
 import { Header } from '@/components/header';
 import { TryQuadLogo } from '@/components/icons';
-import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarRail, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset, SidebarSeparator } from '@/components/ui/sidebar';
 import { AuthButton } from '@/components/auth-button';
 import { CreditUsage } from '@/components/credit-usage';
-import { Home, Gem, ShieldAlert } from 'lucide-react';
+import { Home, Gem, ShieldAlert, Receipt, XCircle, Ban, HelpCircle } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+const refundSections = [
+    {
+        icon: <Ban className="h-5 w-5 text-primary" />,
+        title: "All Sales Are Final",
+        content: "Once a subscription fee is processed, it is non-refundable. This applies to all our plans and in all circumstances, including accidental purchases or if you forget to cancel your subscription."
+    },
+    {
+        icon: <XCircle className="h-5 w-5 text-primary" />,
+        title: "No Refunds for Partial Use",
+        content: "We do not provide refunds or credits for any partial subscription periods or unused services. If you cancel, you will retain access until the end of your billing cycle."
+    },
+    {
+        icon: <HelpCircle className="h-5 w-5 text-primary" />,
+        title: "Why This Policy?",
+        content: "Our services incur significant, non-recoverable computational costs for every image generated. This no-refund policy allows us to manage these costs and continue providing a high-quality service at a competitive price."
+    },
+]
 
 export default function RefundPolicyPage() {
   return (
@@ -75,60 +95,47 @@ export default function RefundPolicyPage() {
       <SidebarInset>
         <div className="flex flex-col min-h-screen bg-background">
           <Header />
-          <main className="flex-1">
+          <main className="flex-1 bg-secondary/30">
             <div className="container mx-auto px-4 py-12 md:py-16">
-              <article className="prose prose-invert lg:prose-xl mx-auto">
-                <h1>Refund Policy for TryQuad AI</h1>
-                
-                <p><strong>Last Updated:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <div className="max-w-4xl mx-auto">
+                    <div className="text-center mb-12">
+                        <Receipt className="h-16 w-16 mx-auto mb-4 text-primary" />
+                        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Refund Policy</h1>
+                        <p className="mt-4 text-lg text-muted-foreground">
+                            Our policy on refunds is simple and transparent.
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-2">Last Updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    </div>
 
-                <h2>Overview</h2>
-                <p>
-                  Thank you for subscribing to TryQuad AI. Our mission is to provide you with the best AI image generation service.
-                  This policy outlines our position on refunds for all our subscription plans.
-                </p>
+                    <Card className="shadow-lg mb-8">
+                        <CardContent className="p-8">
+                            <div className="space-y-6">
+                                {refundSections.map((section, index) => (
+                                    <div key={index} className="flex items-start gap-4">
+                                        <div className="flex-shrink-0 mt-1">
+                                            {section.icon}
+                                        </div>
+                                        <div>
+                                            <h2 className="text-lg font-semibold">{section.title}</h2>
+                                            <p className="text-muted-foreground text-sm">
+                                                {section.content}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                <h2>No Refunds</h2>
-                <p>
-                  All payments made to TryQuad Technologies for our subscription services are final and non-refundable. This policy applies in all circumstances, without exception.
-                </p>
-                <p>
-                  Once a subscription fee is processed, it will not be refunded, in whole or in part, for any reason, including but not limited to:
-                </p>
-                <ul>
-                  <li>Your dissatisfaction with the Service.</li>
-                  <li>Your failure to use the Service or cancellation of your account before the end of your subscription period.</li>
-                  <li>Accidental purchases or subscriptions.</li>
-                  <li>A change in your needs or circumstances.</li>
-                  <li>Service outages or technical issues (we will work to resolve them, but this does not qualify for a refund).</li>
-                  <li>Termination of your account due to a violation of our Terms and Conditions.</li>
-                </ul>
+                    <Alert variant="destructive" className="bg-destructive/10 border-destructive/50">
+                        <XCircle className="h-5 w-5" />
+                        <AlertTitle className="font-semibold">No Exceptions</AlertTitle>
+                        <AlertDescription>
+                            All payments are final and non-refundable. We encourage you to use our Free plan to evaluate the service before purchasing a subscription. For questions, contact <a href="mailto:support@tryquad.ai" className="font-medium text-destructive-foreground hover:underline">support@tryquad.ai</a>.
+                        </AlertDescription>
+                    </Alert>
 
-                <h2>Subscription Cancellation</h2>
-                <p>
-                  You are free to cancel your subscription at any time. When you cancel, you will continue to have access to the service through the end of your current paid billing period. After the billing period ends, your subscription will not be renewed, and you will not be charged again. Cancelling your subscription does not entitle you to a refund for any portion of the fees already paid.
-                </p>
-
-                <h2>Why We Have This Policy</h2>
-                <p>
-                  Our no-refund policy is in place because our services incur significant computational costs upfront for every image generation. When you subscribe, you are purchasing a set number of image credits or unlimited access for a period, and we provision resources accordingly. These costs are irreversible on our end.
-                </p>
-                
-                <h2>Free Plan</h2>
-                <p>
-                  We offer a free plan with a limited number of image generations per month. We encourage all users to utilize the free plan to evaluate the service and ensure it meets your needs before upgrading to a paid subscription. This allows you to test our features and quality without any financial commitment.
-                </p>
-                
-                <h2>Contact Us</h2>
-                <p>
-                  If you have any questions about our Refund Policy, please do not hesitate to contact us. We are here to help you understand our services and policies.
-                </p>
-                <p>
-                  TryQuad Technologies<br/>
-                  Email: <a href="mailto:support@tryquad.ai">support@tryquad.ai</a>
-                </p>
-                
-              </article>
+                </div>
             </div>
           </main>
           <footer className="border-t border-border/50 py-8">

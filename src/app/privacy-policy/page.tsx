@@ -2,10 +2,44 @@
 import Link from 'next/link';
 import { Header } from '@/components/header';
 import { TryQuadLogo } from '@/components/icons';
-import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail, SidebarSeparator } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarRail, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarInset, SidebarSeparator } from '@/components/ui/sidebar';
 import { AuthButton } from '@/components/auth-button';
 import { CreditUsage } from '@/components/credit-usage';
-import { Home, Gem, ShieldAlert } from 'lucide-react';
+import { Home, Gem, ShieldAlert, ShieldCheck, User, Lock, Server, Users, Baby, Edit, Mail } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+const policySections = [
+  {
+    icon: <User className="h-6 w-6 text-primary" />,
+    title: "Information We Collect",
+    content: "We collect personal data you provide (name, email), content you generate (prompts, images), usage data (IP address, browser type), and payment data processed by our partners."
+  },
+  {
+    icon: <Lock className="h-6 w-6 text-primary" />,
+    title: "Use of Your Information",
+    content: "We use your information to create and manage your account, process payments, improve our AI models, analyze usage trends, and communicate with you about your account and our services."
+  },
+  {
+    icon: <Server className="h-6 w-6 text-primary" />,
+    title: "Disclosure of Your Information",
+    content: "We do not sell your data. We may share information with service providers (e.g., payment processors), to comply with legal obligations, or in connection with a business transfer."
+  },
+  {
+    icon: <ShieldCheck className="h-6 w-6 text-primary" />,
+    title: "Security of Your Information",
+    content: "We use administrative, technical, and physical security measures to protect your personal information. However, no security system is impenetrable, and we cannot guarantee absolute security."
+  },
+  {
+    icon: <Baby className="h-6 w-6 text-primary" />,
+    title: "Policy for Children",
+    content: "Our services are not directed to individuals under the age of 13. We do not knowingly collect personal information from children under 13."
+  },
+  {
+    icon: <Edit className="h-6 w-6 text-primary" />,
+    title: "Changes to This Privacy Policy",
+    content: "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy on this page. You are advised to review this policy periodically."
+  },
+]
 
 export default function PrivacyPolicyPage() {
   return (
@@ -75,102 +109,49 @@ export default function PrivacyPolicyPage() {
       <SidebarInset>
         <div className="flex flex-col min-h-screen bg-background">
           <Header />
-          <main className="flex-1">
+          <main className="flex-1 bg-secondary/30">
             <div className="container mx-auto px-4 py-12 md:py-16">
-              <article className="prose prose-invert lg:prose-xl mx-auto">
-                <h1>Privacy Policy for TryQuad AI</h1>
-                
-                <p><strong>Last Updated:</strong> {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <div className="max-w-4xl mx-auto">
+                <div className="text-center mb-12">
+                  <ShieldCheck className="h-16 w-16 mx-auto mb-4 text-primary" />
+                  <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Privacy Policy</h1>
+                  <p className="mt-4 text-lg text-muted-foreground">
+                    Your privacy is important to us. Here’s how we handle your information.
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">Last Updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </div>
 
-                <p>
-                  Welcome to TryQuad AI. We are committed to protecting your privacy. This Privacy Policy explains how we collect,
-                  use, disclose, and safeguard your information when you use our AI Image Generator service (the "Service"). Please read
-                  this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the service.
-                </p>
-
-                <h2>1. Information We Collect</h2>
-                <p>
-                  We may collect information about you in a variety of ways. The information we may collect via the Service includes:
-                </p>
-                <ul>
-                  <li>
-                    <strong>Personal Data:</strong> Personally identifiable information, such as your name, email address, and demographic
-                    information, that you voluntarily give to us when you register with the Service.
-                  </li>
-                  <li>
-                    <strong>Generated Content:</strong> The prompts you enter and the images you generate using our Service. We retain this
-                    data to improve our AI models and provide the service to you.
-                  </li>
-                  <li>
-                    <strong>Usage Data:</strong> Information our servers automatically collect when you access the Service, such as your IP
-                    address, your browser type, your operating system, your access times, and the pages you have viewed directly
-                    before and after accessing the Service.
-                  </li>
-                  <li>
-                    <strong>Payment Data:</strong> We may collect data necessary to process your payment if you make purchases, such as your
-                    payment instrument number (e.g., a credit card number), and the security code associated with your payment
-                    instrument. All payment data is stored by our payment processor, Razorpay. You should review their privacy policy
-                    and contact them directly for responses to your questions.
-                  </li>
-                </ul>
-
-                <h2>2. Use of Your Information</h2>
-                <p>
-                  Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience.
-                  Specifically, we may use information collected about you via the Service to:
-                </p>
-                <ul>
-                  <li>Create and manage your account.</li>
-                  <li>Process your payments and subscriptions.</li>
-                  <li>Email you regarding your account or order.</li>
-                  <li>Improve our AI models and the overall quality of the Service.</li>
-                  <li>Monitor and analyze usage and trends to improve your experience with the Service.</li>
-                  <li>Notify you of updates to the Service.</li>
-                  <li>Prevent fraudulent transactions, monitor against theft, and protect against criminal activity.</li>
-                  <li>Respond to customer service requests.</li>
-                </ul>
-
-                <h2>3. Disclosure of Your Information</h2>
-                <p>
-                  We do not share your personal information with third parties except as described in this Privacy Policy. We may share
-                  information we have collected about you in certain situations:
-                </p>
-                <ul>
-                    <li><strong>By Law or to Protect Rights:</strong> If we believe the release of information about you is necessary to respond to legal process, to investigate or remedy potential violations of our policies, or to protect the rights, property, and safety of others, we may share your information as permitted or required by any applicable law, rule, or regulation.</li>
-                    <li><strong>Third-Party Service Providers:</strong> We may share your information with third parties that perform services for us or on our behalf, including payment processing, data analysis, email delivery, hosting services, and customer service.</li>
-                    <li><strong>Business Transfers:</strong> We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.</li>
-                </ul>
-
-                <h2>4. Security of Your Information</h2>
-                <p>
-                  We use administrative, technical, and physical security measures to help protect your personal information. While we
-                  have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our
-                  efforts, no security measures are perfect or impenetrable, and no method of data transmission can be guaranteed
-                  against any interception or other type of misuse.
-                </p>
-                
-                <h2>5. Policy for Children</h2>
-                <p>
-                  We do not knowingly solicit information from or market to children under the age of 13. If you become aware of any
-                  data we have collected from children under age 13, please contact us using the contact information provided below.
-                </p>
-                
-                <h2>6. Changes to This Privacy Policy</h2>
-                <p>
-                  We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy
-                  on this page. You are advised to review this Privacy Policy periodically for any changes.
-                </p>
-                
-                <h2>7. Contact Us</h2>
-                <p>
-                  If you have questions or comments about this Privacy Policy, please contact us at:
-                </p>
-                <p>
-                  TryQuad Technologies<br/>
-                  Email: <a href="mailto:support@tryquad.ai">support@tryquad.ai</a>
-                </p>
-
-              </article>
+                <Card className="shadow-lg">
+                  <CardContent className="p-8">
+                    <div className="space-y-8">
+                       {policySections.map((section, index) => (
+                        <div key={index} className="flex items-start gap-6">
+                            <div className="flex-shrink-0 p-3 bg-primary/10 rounded-full border border-primary/20">
+                                {section.icon}
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-semibold mb-2">{section.title}</h2>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    {section.content}
+                                </p>
+                            </div>
+                        </div>
+                       ))}
+                       <div className="flex items-start gap-6">
+                            <div className="flex-shrink-0 p-3 bg-primary/10 rounded-full border border-primary/20">
+                                <Mail className="h-6 w-6 text-primary" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-semibold mb-2">Contact Us</h2>
+                                <p className="text-muted-foreground leading-relaxed">
+                                    If you have questions or comments about this Privacy Policy, please contact us at: <a href="mailto:support@tryquad.ai" className="text-primary hover:underline">support@tryquad.ai</a>.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </main>
           <footer className="border-t border-border/50 py-8">
