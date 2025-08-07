@@ -17,24 +17,27 @@ export async function createOrder(input: z.infer<typeof CreateOrderSchema>) {
 
   const { amount, currency } = validatedInput.data;
 
-  const instance = new Razorpay({
-    key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-  });
-
-  const options = {
-    amount: amount,
-    currency: currency,
-    receipt: `receipt_order_${new Date().getTime()}`,
-  };
-
   try {
+    const instance = new Razorpay({
+      key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    const options = {
+      amount: amount,
+      currency: currency,
+      receipt: `receipt_order_${new Date().getTime()}`,
+    };
+    
     const order = await instance.orders.create(options);
+    
+    if (!order) {
+      throw new Error('Order creation failed.');
+    }
+
     return order;
   } catch (error) {
     console.error('Razorpay order creation failed:', error);
     throw new Error('Could not create Razorpay order.');
   }
 }
-
-    

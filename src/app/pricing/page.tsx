@@ -101,10 +101,10 @@ export default function PricingPage() {
         currency: 'INR',
       });
       
-      if (!order) {
+      if (!order || !order.id) {
         throw new Error('Order creation failed');
       }
-
+      
       if (!Razorpay) {
         toast({ variant: 'destructive', title: 'Error', description: 'Razorpay SDK not loaded.' });
         setLoadingPlan(null);
