@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { GrockLogo } from "@/components/icons";
-import { Button } from "./ui/button";
+import { AuthButton } from "./auth-button";
 
 export function Header() {
   return (
@@ -16,11 +16,7 @@ export function Header() {
             </h1>
           </Link>
 
-          <Link href="/generate">
-            <Button>
-                Get Started
-            </Button>
-          </Link>
+          <AuthButton />
         </div>
       </div>
     </header>

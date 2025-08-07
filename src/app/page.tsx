@@ -41,7 +41,7 @@ export default function LandingPage() {
             </p>
             <Link href="/generate">
               <Button size="lg" className="font-semibold text-lg group">
-                Start Generating for Free
+                Start Generating
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
