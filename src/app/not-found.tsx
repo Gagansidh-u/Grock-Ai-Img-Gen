@@ -71,33 +71,41 @@ export default function NotFoundPage() {
         className="relative z-10 flex flex-col items-center"
         style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
       >
-        <motion.h1
-          className="text-[12rem] font-extrabold tracking-tighter text-primary md:text-[16rem]"
-          initial={{ opacity: 0, y: 50, rotateX: -30 }}
-          animate={{ 
-            opacity: 1, 
-            y: [0, -15, 0],
-            rotateX: 0,
-            transition: {
-                y: {
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: 'reverse',
-                    ease: 'easeInOut'
-                },
-                opacity: { duration: 0.8, ease: 'easeOut' },
-                rotateX: { duration: 0.8, ease: 'easeOut' },
-            }
-          }}
+        <h1
+          className="text-[12rem] font-extrabold tracking-tighter text-primary md:text-[16rem] flex"
           style={{ textShadow: '0 10px 40px hsla(var(--primary), 0.3)' }}
         >
-          404
-        </motion.h1>
+          {['4', '0', '4'].map((char, index) => (
+             <motion.span
+              key={index}
+              initial={{ opacity: 0, y: 50, rotateX: -30 }}
+              animate={{ 
+                opacity: 1, 
+                y: [0, -15, 0],
+                rotateX: 0,
+                transition: {
+                    delay: index * 0.15,
+                    y: {
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatType: 'reverse',
+                        ease: 'easeInOut',
+                        delay: index * 0.15 + 0.5
+                    },
+                    opacity: { duration: 0.8, ease: 'easeOut' },
+                    rotateX: { duration: 0.8, ease: 'easeOut' },
+                }
+              }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </h1>
         <motion.h2
           className="-mt-12 text-2xl font-semibold text-foreground md:-mt-16 md:text-4xl"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
         >
           Page Lost in Space
         </motion.h2>
@@ -105,14 +113,14 @@ export default function NotFoundPage() {
           className="mt-4 max-w-md text-center text-muted-foreground"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
         >
           It seems the page you are looking for has ventured into an unknown dimension. Let's get you back to safety.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
           className="mt-8"
         >
           <Button asChild size="lg" className="group rounded-full font-semibold">
