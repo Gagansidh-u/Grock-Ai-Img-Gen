@@ -30,16 +30,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signIn = async () => {
-    setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       if (user) {
+        // Check if user profile exists, if not create one.
         const userProfile = await getUserProfile(user.uid);
         if (!userProfile) {
           await createUserProfile(user);
         }
-        setUser(user); // Manually set user to trigger redirect faster
       }
     } catch (error: any) {
       console.error("Error signing in with Google: ", error);
@@ -48,8 +47,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         title: 'Authentication Failed',
         description: error.message,
       });
-    } finally {
-       setLoading(false);
+      // Ensure loading is false on error so user isn't stuck.
+      setLoading(false);
     }
   };
 
