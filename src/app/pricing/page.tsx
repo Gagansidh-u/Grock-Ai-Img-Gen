@@ -3,6 +3,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Script from 'next/script';
 import { Home, Gem, CheckCircle, Loader2 } from 'lucide-react';
 import { GrockLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { cn } from '@/lib/utils';
 import { Header } from '@/components/header';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
-import useRazorpay from "react-razorpay";
 import { createOrder } from '@/lib/razorpay';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -18,6 +18,8 @@ import { useRouter } from 'next/navigation';
 import { updateUserPlan, UserProfile } from '@/lib/firestore';
 import { AuthButton } from '@/components/auth-button';
 import { useUserData } from '@/hooks/use-user-data';
+
+declare const window: any;
 
 const plans = [
     {
@@ -80,7 +82,6 @@ const plans = [
 
 export default function PricingPage() {
   const [loadingPlan, setLoadingPlan] = React.useState<string | null>(null);
-  const Razorpay = useRazorpay();
   const { toast } = useToast();
   const { user } = useAuth();
   const { userData } = useUserData();
@@ -103,12 +104,6 @@ export default function PricingPage() {
 
       if (!order || !order.id) {
         throw new Error('Order creation failed');
-      }
-
-      if (!Razorpay) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Razorpay SDK not loaded.' });
-        setLoadingPlan(null);
-        return;
       }
 
       const options = {
@@ -144,7 +139,7 @@ export default function PricingPage() {
         },
       };
 
-      const rzp = new (Razorpay as any)(options);
+      const rzp = new window.Razorpay(options);
 
       rzp.on('payment.failed', function (response: any) {
         toast({
@@ -170,6 +165,11 @@ export default function PricingPage() {
 
 
   return (
+     <>
+      <Script
+        id="razorpay-checkout-js"
+        src="https://checkout.razorpay.com/v1/checkout.js"
+      />
      <SidebarProvider>
       <Sidebar>
         <SidebarRail />
@@ -283,5 +283,6 @@ export default function PricingPage() {
         </div>
       </SidebarInset>
     </SidebarProvider>
+    </>
   )
 }
