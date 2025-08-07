@@ -4,14 +4,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
-import { Home, Gem, CheckCircle, Loader2, Download, X } from 'lucide-react';
+import { Home, Gem, CheckCircle, Loader2, Download, X, ShieldAlert } from 'lucide-react';
 import { TryQuadLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { Header } from '@/components/header';
-import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail, SidebarSeparator } from '@/components/ui/sidebar';
 import { createOrder } from '@/lib/razorpay';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -224,6 +224,31 @@ export default function PricingPage() {
                   Pricing
                 </Link>
               </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarSeparator className="my-2" />
+             <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                    <Link href="/terms-conditions">
+                        <ShieldAlert />
+                        Terms & Conditions
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                    <Link href="/privacy-policy">
+                        <ShieldAlert />
+                        Privacy Policy
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                    <Link href="/refund-policy">
+                        <ShieldAlert />
+                        Refund Policy
+                    </Link>
+                </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>

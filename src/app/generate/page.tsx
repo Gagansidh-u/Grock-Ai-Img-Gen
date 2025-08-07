@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { generateImage } from '@/ai/flows/generate-image';
 import { suggestPrompt } from '@/ai/flows/suggest-prompt';
 import { useToast } from '@/hooks/use-toast';
-import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X, Home, Gem } from 'lucide-react';
+import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X, Home, Gem, ShieldAlert } from 'lucide-react';
 import { STYLES, ASPECT_RATIOS, IMAGE_COUNTS } from '@/lib/options';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,7 +17,7 @@ import { fileToDataUri } from '@/lib/utils';
 import { useDropzone } from 'react-dropzone';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Label } from '@/components/ui/label';
-import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail, SidebarSeparator } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { TryQuadLogo } from '@/components/icons';
 import { useAuth } from '@/hooks/use-auth';
@@ -198,6 +198,31 @@ export default function GeneratorPage() {
                         <Link href="/pricing">
                             <Gem />
                             Pricing
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarSeparator className="my-2" />
+                 <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                        <Link href="/terms-conditions">
+                            <ShieldAlert />
+                            Terms & Conditions
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                        <Link href="/privacy-policy">
+                            <ShieldAlert />
+                            Privacy Policy
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                        <Link href="/refund-policy">
+                            <ShieldAlert />
+                            Refund Policy
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

@@ -15,7 +15,7 @@ export function Header() {
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
                 <TryQuadLogo className="h-7 w-7 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold text-foreground tracking-tighter hidden sm:block">
+              <h1 className="text-2xl font-bold text-foreground tracking-tighter">
                 TryQuad AI
               </h1>
             </Link>
