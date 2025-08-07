@@ -74,7 +74,7 @@ export default function GeneratorPage() {
         setGeneratedImages([]);
         const result = await generateImage({ prompt, style, aspectRatio, numberOfImages, referenceImages });
         setGeneratedImages(result.images);
-        if (user && userData.plan !== 'Pro') {
+        if (user && userData && userData.plan !== 'Pro') {
             await updateImageCount(user.uid, numberOfImages);
         }
       } catch (error) {
