@@ -25,6 +25,7 @@ import { useUserData } from '@/hooks/use-user-data';
 import { updateImageCount } from '@/lib/firestore';
 import { Progress } from '@/components/ui/progress';
 import { AuthButton } from '@/components/auth-button';
+import { useRouter } from 'next/navigation';
 
 
 export default function GeneratorPage() {
@@ -39,6 +40,8 @@ export default function GeneratorPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const { userData, loading: userDataLoading } = useUserData();
+  const router = useRouter();
+
 
   const getPlanLimit = () => {
     if (!userData) return 8; // Default for non-logged-in or new users
@@ -230,7 +233,7 @@ export default function GeneratorPage() {
                   <h1 className='text-3xl md:text-4xl font-bold tracking-tight'>AI Image Generator</h1>
                   <p className='text-muted-foreground md:text-lg'>Create stunning visuals with the power of AI.</p>
                 </div>
-                 {user && !userDataLoading && (
+                 {user && !userDataLoading && userData && (
                     <Card className="p-4 flex flex-col gap-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">{userData?.plan} Plan</span>
@@ -402,5 +405,7 @@ export default function GeneratorPage() {
     </SidebarProvider>
   );
 }
+
+    
 
     
