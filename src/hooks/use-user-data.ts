@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './use-auth';
 import { db } from '@/lib/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
-import type { UserProfile } from '@/lib/firestore';
+import { UserProfile, resetUserCredits } from '@/lib/firestore';
 
 export const useUserData = () => {
   const { user } = useAuth();
@@ -18,7 +18,20 @@ export const useUserData = () => {
       const userRef = doc(db, 'users', user.uid);
       unsubscribe = onSnapshot(userRef, (docSnap) => {
         if (docSnap.exists()) {
-          setUserData(docSnap.data() as UserProfile);
+          const profile = docSnap.data() as UserProfile;
+          
+          // Check for monthly credit reset
+          const now = new Date();
+          const renewalDate = profile.planRenewalDate.toDate();
+          if (now > renewalDate) {
+              // Reset credits if renewal date has passed
+              resetUserCredits(user.uid, profile.plan).then(() => {
+                  // The onSnapshot listener will pick up the change automatically
+              });
+          } else {
+             setUserData(profile);
+          }
+
         } else {
           setUserData(null);
         }

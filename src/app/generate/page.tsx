@@ -42,18 +42,6 @@ export default function GeneratorPage() {
   const { user } = useAuth();
   const { userData } = useUserData();
 
-
-  const getPlanLimit = () => {
-    if (!userData) return 8; // Default for non-logged-in or new users
-    switch (userData.plan) {
-      case 'Free': return 8;
-      case 'Basic': return 100;
-      case 'Standard': return 250;
-      case 'Pro': return Infinity;
-      default: return 8;
-    }
-  }
-
   const handleGenerate = () => {
     if (!prompt.trim() && referenceImages.length === 0) {
       toast({
@@ -65,12 +53,11 @@ export default function GeneratorPage() {
     }
     
     if (user && userData) {
-        const limit = getPlanLimit();
-        if (userData.imagesGenerated + numberOfImages > limit) {
+        if (userData.imageCredits < numberOfImages && userData.plan !== 'Pro') {
              toast({
                 variant: 'destructive',
-                title: 'Image limit reached',
-                description: 'You have reached your monthly image generation limit. Please upgrade your plan to continue.',
+                title: 'Not enough credits',
+                description: `You need ${numberOfImages} credits to generate, but you only have ${userData.imageCredits}. Please upgrade your plan.`,
                 action: (
                   <Button asChild>
                     <Link href="/pricing">Upgrade</Link>
@@ -87,7 +74,7 @@ export default function GeneratorPage() {
         setGeneratedImages([]);
         const result = await generateImage({ prompt, style, aspectRatio, numberOfImages, referenceImages });
         setGeneratedImages(result.images);
-        if (user) {
+        if (user && userData.plan !== 'Pro') {
             await updateImageCount(user.uid, numberOfImages);
         }
       } catch (error) {

@@ -34,7 +34,7 @@ const plans = [
         pricePeriod: '/ month',
         description: 'For individuals starting out.',
         features: [
-            '8 image generations per month',
+            '8 image credits per month',
             'Basic image quality',
             'Community support',
         ],
@@ -320,7 +320,7 @@ export default function PricingPage() {
                             disabled={loadingPlan === plan.name || (userData?.plan === plan.name)}
                             variant={plan.isPrimary ? 'default' : 'secondary'}
                             onClick={() => {
-                                if (plan.name !== 'Free') {
+                                if (plan.name !== 'Free' && userData?.plan !== plan.name) {
                                     handlePayment(plan);
                                 }
                             }}

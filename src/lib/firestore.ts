@@ -1,7 +1,6 @@
-
 // src/lib/firestore.ts
 import { db } from './firebase';
-import { doc, setDoc, getDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
 import type { User } from 'firebase/auth';
 
 export interface UserProfile {
@@ -9,7 +8,8 @@ export interface UserProfile {
   email: string | null;
   displayName: string | null;
   plan: 'Free' | 'Basic' | 'Standard' | 'Pro';
-  imagesGenerated: number;
+  imageCredits: number;
+  planRenewalDate: Timestamp;
   createdAt: any;
   updatedAt: any;
 }
@@ -17,12 +17,16 @@ export interface UserProfile {
 // Create a new user profile in Firestore
 export const createUserProfile = async (user: User, displayName?: string | null): Promise<void> => {
   const userRef = doc(db, 'users', user.uid);
+  const renewalDate = new Date();
+  renewalDate.setMonth(renewalDate.getMonth() + 1);
+
   const userProfile: UserProfile = {
     uid: user.uid,
     email: user.email,
     displayName: displayName || user.displayName,
     plan: 'Free',
-    imagesGenerated: 0,
+    imageCredits: 8,
+    planRenewalDate: Timestamp.fromDate(renewalDate),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
@@ -39,20 +43,49 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
   return null;
 };
 
-// Update user image generation count
+// Update user image generation count by decrementing
 export const updateImageCount = async (uid: string, count: number): Promise<void> => {
     const userRef = doc(db, 'users', uid);
     await updateDoc(userRef, {
-        imagesGenerated: increment(count),
+        imageCredits: increment(-count),
         updatedAt: serverTimestamp()
     });
 };
 
-// Update user plan
+const getCreditsForPlan = (plan: UserProfile['plan']) => {
+    switch (plan) {
+        case 'Basic': return 100;
+        case 'Standard': return 250;
+        case 'Pro': return Infinity; // Using Infinity for Pro plan
+        default: return 8; // Free plan
+    }
+}
+
+// Update user plan and reset credits
 export const updateUserPlan = async (uid: string, plan: UserProfile['plan']): Promise<void> => {
     const userRef = doc(db, 'users', uid);
+    const newCredits = getCreditsForPlan(plan);
+    const renewalDate = new Date();
+    renewalDate.setMonth(renewalDate.getMonth() + 1);
+
     await updateDoc(userRef, {
         plan: plan,
+        imageCredits: newCredits,
+        planRenewalDate: Timestamp.fromDate(renewalDate),
+        updatedAt: serverTimestamp()
+    });
+};
+
+// Reset credits for a user
+export const resetUserCredits = async (uid: string, plan: UserProfile['plan']): Promise<void> => {
+    const userRef = doc(db, 'users', uid);
+    const newCredits = getCreditsForPlan(plan);
+    const renewalDate = new Date();
+    renewalDate.setMonth(renewalDate.getMonth() + 1);
+
+    await updateDoc(userRef, {
+        imageCredits: newCredits,
+        planRenewalDate: Timestamp.fromDate(renewalDate),
         updatedAt: serverTimestamp()
     });
 };

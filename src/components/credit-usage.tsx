@@ -14,18 +14,22 @@ export function CreditUsage() {
 
   const getPlanDetails = () => {
     if (user && userData) {
-      switch (userData.plan) {
-        case 'Free': return { name: 'Free', limit: 8, used: userData.imagesGenerated };
-        case 'Basic': return { name: 'Basic', limit: 100, used: userData.imagesGenerated };
-        case 'Standard': return { name: 'Standard', limit: 250, used: userData.imagesGenerated };
-        case 'Pro': return { name: 'Pro', limit: Infinity, used: userData.imagesGenerated };
-        default: return { name: 'Free', limit: 8, used: userData.imagesGenerated };
+      const planLimits = {
+        'Free': 8,
+        'Basic': 100,
+        'Standard': 250,
+        'Pro': Infinity,
       }
+      return { 
+        name: userData.plan, 
+        limit: planLimits[userData.plan] || 8, 
+        used: (planLimits[userData.plan] || 8) - userData.imageCredits
+      };
     }
     // Default for non-logged-in users
-    return { name: 'Free', limit: 8, used: 0 };
+    return { name: 'Free', limit: 8, used: 0, current: 8 };
   };
-
+  
   if (authLoading || (user && userDataLoading)) {
     return (
         <Card className="p-3 bg-card/50 flex flex-col gap-2 border-0 shadow-none">
@@ -38,16 +42,16 @@ export function CreditUsage() {
     )
   }
 
-  const { name: planName, limit: imageLimit, used: imagesUsed } = getPlanDetails();
-  
-  const progressPercentage = imageLimit === Infinity ? 100 : (imagesUsed / imageLimit) * 100;
+  const { name: planName, limit: imageLimit } = getPlanDetails();
+  const imageCredits = userData?.imageCredits ?? 8;
+  const progressPercentage = imageLimit === Infinity ? 100 : (imageCredits / imageLimit) * 100;
 
   return (
     <Card className="p-3 bg-card/50 flex flex-col gap-2 border-0 shadow-none">
         <div className="flex justify-between items-center">
             <span className="text-sm font-medium">{planName} Plan</span>
             <span className="text-sm text-muted-foreground">
-            {imageLimit === Infinity ? `${imagesUsed} / ∞` : `${imagesUsed} / ${imageLimit}`}
+            {imageLimit === Infinity ? `∞ Credits` : `${imageCredits} / ${imageLimit}`}
             </span>
         </div>
         <Progress value={progressPercentage} className="h-2" />
