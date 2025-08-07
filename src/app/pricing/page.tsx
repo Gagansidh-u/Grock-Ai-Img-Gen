@@ -15,6 +15,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Header } from '@/components/header';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
+import useRazorpay from "react-razorpay";
+import { createOrder } from '@/lib/razorpay';
+import { useToast } from '@/hooks/use-toast';
+import { updateUserPlan } from '@/lib/firestore';
 
 
 const plans = [
@@ -80,6 +84,61 @@ export default function PricingPage() {
   const { user, loading } = useAuth();
   const { userData, loading: userDataLoading } = useUserData();
   const router = useRouter();
+  const [Razorpay] = useRazorpay();
+  const { toast } = useToast();
+  const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
+
+  const handlePayment = async (plan: typeof plans[number]) => {
+    if (!user) {
+      router.push('/login?redirect=/pricing');
+      return;
+    }
+    
+    setIsProcessing(plan.name);
+
+    try {
+      const order = await createOrder({ amount: plan.price * 100, currency: 'INR' });
+      if (!order) {
+        throw new Error('Order creation failed');
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Grock AI",
+        description: `Payment for ${plan.name} Plan`,
+        order_id: order.id,
+        handler: async (response: any) => {
+          await updateUserPlan(user.uid, plan.name as UserProfile['plan']);
+          toast({
+            title: "Payment Successful",
+            description: `You have successfully upgraded to the ${plan.name} plan.`,
+          });
+        },
+        prefill: {
+            name: user.displayName || '',
+            email: user.email || '',
+        },
+        theme: {
+            color: "#6D28D9"
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment failed: ", error);
+      toast({
+        variant: 'destructive',
+        title: 'Oh no! Something went wrong.',
+        description: 'There was a problem with the payment. Please try again.',
+      });
+    } finally {
+        setIsProcessing(null);
+    }
+  };
+
 
   if (loading) {
     return (
@@ -201,15 +260,13 @@ export default function PricingPage() {
                       <CardFooter>
                         <Button
                           className="w-full"
-                          disabled={ plan.name !== 'Free' }
+                          disabled={userData?.plan === plan.name || isProcessing === plan.name}
                           variant={plan.isPrimary ? 'default' : 'secondary'}
-                          onClick={() => {
-                            if (!user) {
-                              router.push('/login?redirect=/pricing');
-                            }
-                          }}
+                          onClick={() => handlePayment(plan)}
                         >
-                           {userData?.plan === plan.name ? 'Current Plan' : plan.cta}
+                           {isProcessing === plan.name ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                           ) : userData?.plan === plan.name ? 'Current Plan' : plan.cta}
                         </Button>
                       </CardFooter>
                     </Card>
