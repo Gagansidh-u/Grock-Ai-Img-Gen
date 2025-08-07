@@ -75,24 +75,23 @@ const generateImageFlow = ai.defineFlow(
 
     const promptPayload: ({ text: string } | { media: { url: string } })[] = [];
 
-    // Add text prompt if it exists
-    if (modifiedPrompt) {
-      promptPayload.push({ text: modifiedPrompt });
-    } else {
-      // If no text prompt, add a default one when reference images are present
-      if (input.referenceImages && input.referenceImages.length > 0) {
-        promptPayload.push({ text: 'Generate an image based on the reference image.' });
-      }
-    }
-
-    // Add reference images
+    // Add reference images first
     if (input.referenceImages && input.referenceImages.length > 0) {
       input.referenceImages.forEach((url) => {
         promptPayload.push({ media: { url } });
       });
     }
 
-    // If payload is empty, something went wrong.
+    // Then add the text prompt
+    if (modifiedPrompt) {
+      promptPayload.push({ text: modifiedPrompt });
+    }
+    
+    // If there are only reference images, add a default prompt to guide the model.
+    if (promptPayload.length > 0 && !promptPayload.some(item => 'text' in item)) {
+        promptPayload.push({ text: "Generate a new image based on the provided reference, maintaining a similar style and subject." });
+    }
+
     if (promptPayload.length === 0) {
         throw new Error("A prompt or reference image is required.");
     }
