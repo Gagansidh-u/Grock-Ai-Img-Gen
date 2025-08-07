@@ -133,6 +133,7 @@ export default function GeneratorPage() {
 
   const isPending = isGenerating || isSuggesting;
   const promptRows = prompt.split('\n').length;
+  const showSmallUploadButton = promptRows <= 2;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -150,11 +151,11 @@ export default function GeneratorPage() {
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="A vibrant synthwave cityscape..."
-                className="pl-4 pr-4 min-h-[52px] h-auto resize-none py-3 shadow-lg rounded-2xl pb-10"
+                className="pl-4 pr-12 min-h-[52px] h-auto resize-none py-3 shadow-lg rounded-2xl"
                 rows={promptRows < 20 ? promptRows : 20}
                 disabled={isPending}
               />
-              <div className="absolute left-2 bottom-3 flex items-center gap-2">
+              <div className={`absolute right-2 flex items-center gap-2 ${showSmallUploadButton ? 'top-1/2 -translate-y-1/2' : 'bottom-3'}`}>
                  <Button variant="ghost" size="icon" onClick={openFileDialog} disabled={isPending} className="h-9 w-9 group rounded-full">
                    <Upload className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                  </Button>
@@ -313,5 +314,7 @@ export default function GeneratorPage() {
     </div>
   );
 }
+
+    
 
     
