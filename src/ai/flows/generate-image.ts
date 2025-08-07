@@ -1,4 +1,3 @@
-
 // src/ai/flows/generate-image.ts
 'use server';
 /**
@@ -61,17 +60,21 @@ const generateImageFlow = ai.defineFlow(
     const stylePrompt = styleInfo ? styleInfo.prompt : '';
     const modifiedPrompt = `${stylePrompt}, ${input.prompt}`;
 
-    const generationPromises = Array.from({ length: input.numberOfImages }).map(async () => {
-        const {media} = await ai.generate({
-          model: 'googleai/gemini-2.0-flash-preview-image-generation',
-          prompt: modifiedPrompt,
-          config: {
-            responseModalities: ['TEXT', 'IMAGE'],
-          },
-        });
-        return media.url!;
+    const generationPromises = Array.from({
+      length: input.numberOfImages || 1,
+    }).map(async () => {
+      const {media} = await ai.generate({
+        model: 'googleai/gemini-2.0-flash-preview-image-generation',
+        prompt: modifiedPrompt,
+        config: {
+          responseModalities: ['TEXT', 'IMAGE'],
+        },
+      });
+      if (!media) {
+        throw new Error('Image generation failed to return media.');
       }
-    );
+      return media.url!;
+    });
 
     const images = await Promise.all(generationPromises);
 
