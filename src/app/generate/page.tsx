@@ -17,13 +17,8 @@ import { fileToDataUri } from '@/lib/utils';
 import { useDropzone } from 'react-dropzone';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
 import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useUserData } from '@/hooks/use-user-data';
-import { updateImageCount } from '@/lib/firestore';
 import { GrockLogo } from '@/components/icons';
 
 export default function GeneratorPage() {
@@ -37,17 +32,7 @@ export default function GeneratorPage() {
   const [isSuggesting, startSuggestionTransition] = useTransition();
   const { toast } = useToast();
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
-  const { user, loading } = useAuth();
-  const { userData, loading: userDataLoading } = useUserData();
-  const router = useRouter();
   
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
-
-
   const handleGenerate = () => {
     if (!prompt.trim() && referenceImages.length === 0) {
       toast({
@@ -63,9 +48,6 @@ export default function GeneratorPage() {
         setGeneratedImages([]);
         const result = await generateImage({ prompt, style, aspectRatio, numberOfImages, referenceImages });
         setGeneratedImages(result.images);
-        if (user) {
-           await updateImageCount(user.uid, numberOfImages);
-        }
       } catch (error) {
         console.error('Image generation failed:', error);
         toast({
@@ -156,14 +138,6 @@ export default function GeneratorPage() {
   const showSmallUploadButton = promptRows <= 2;
   const hasReferenceImages = referenceImages.length > 0;
 
-  if (loading || !user) {
-    return (
-      <div className="flex flex-col min-h-screen bg-background items-center justify-center">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading your creative space...</p>
-      </div>
-    );
-  }
 
   return (
     <SidebarProvider>
@@ -200,22 +174,6 @@ export default function GeneratorPage() {
             </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          {userDataLoading ? (
-            <Skeleton className="h-10 w-full" />
-          ) : userData ? (
-            <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
-               <Avatar className="h-9 w-9">
-                  <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                  <AvatarFallback>{user.displayName?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold truncate">{user.displayName}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {userData.imagesGenerated} images used
-                  </p>
-                </div>
-            </div>
-          ): null}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
@@ -400,4 +358,3 @@ export default function GeneratorPage() {
     </SidebarProvider>
   );
 }
-

@@ -2,24 +2,14 @@
 "use client";
 
 import React from 'react';
-import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Home, Gem, CheckCircle, Loader2 } from 'lucide-react';
 import { GrockLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useUserData } from '@/hooks/use-user-data';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Header } from '@/components/header';
 import { SidebarProvider, Sidebar, SidebarTrigger, SidebarInset, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter, SidebarRail } from '@/components/ui/sidebar';
-import useRazorpay from "react-razorpay";
-import { createOrder } from '@/lib/razorpay';
-import { useToast } from '@/hooks/use-toast';
-import { updateUserPlan, UserProfile } from '@/lib/firestore';
-
 
 const plans = [
     {
@@ -81,73 +71,6 @@ const plans = [
 
 
 export default function PricingPage() {
-  const { user, loading } = useAuth();
-  const { userData, loading: userDataLoading } = useUserData();
-  const router = useRouter();
-  const [Razorpay] = useRazorpay();
-  const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
-
-  const handlePayment = async (plan: typeof plans[number]) => {
-    if (!user) {
-      router.push('/login?redirect=/pricing');
-      return;
-    }
-    
-    setIsProcessing(plan.name);
-
-    try {
-      const order = await createOrder({ amount: plan.price * 100, currency: 'INR' });
-      if (!order) {
-        throw new Error('Order creation failed');
-      }
-
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-        amount: order.amount.toString(),
-        currency: order.currency,
-        name: "Grock AI",
-        description: `Payment for ${plan.name} Plan`,
-        order_id: order.id,
-        handler: async (response: any) => {
-          await updateUserPlan(user.uid, plan.name as UserProfile['plan']);
-          toast({
-            title: "Payment Successful",
-            description: `You have successfully upgraded to the ${plan.name} plan.`,
-          });
-        },
-        prefill: {
-            name: user.displayName || '',
-            email: user.email || '',
-        },
-        theme: {
-            color: "#6D28D9"
-        }
-      };
-
-      const rzp = new Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error("Payment failed: ", error);
-      toast({
-        variant: 'destructive',
-        title: 'Oh no! Something went wrong.',
-        description: 'There was a problem with the payment. Please try again.',
-      });
-    } finally {
-        setIsProcessing(null);
-    }
-  };
-
-
-  if (loading) {
-    return (
-      <div className="flex flex-col min-h-screen bg-background items-center justify-center">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading plans...</p>
-      </div>
-    );
-  }
 
   return (
      <SidebarProvider>
@@ -184,30 +107,6 @@ export default function PricingPage() {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
-          {user &&
-            (userDataLoading ? (
-              <Skeleton className="h-10 w-full" />
-            ) : userData ? (
-              <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/50">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage
-                    src={user.photoURL || ''}
-                    alt={user.displayName || 'User'}
-                  />
-                  <AvatarFallback>
-                    {user.displayName?.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold truncate">
-                    {user.displayName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {userData.imagesGenerated} images used
-                  </p>
-                </div>
-              </div>
-            ) : null)}
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
@@ -260,13 +159,10 @@ export default function PricingPage() {
                       <CardFooter>
                         <Button
                           className="w-full"
-                          disabled={userData?.plan === plan.name || !!isProcessing}
+                          disabled={plan.name !== 'Free'}
                           variant={plan.isPrimary ? 'default' : 'secondary'}
-                          onClick={() => handlePayment(plan)}
                         >
-                           {isProcessing === plan.name ? (
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                           ) : userData?.plan === plan.name ? 'Current Plan' : plan.cta}
+                           {plan.name === 'Free' ? 'Current Plan' : plan.cta}
                         </Button>
                       </CardFooter>
                     </Card>
@@ -280,5 +176,3 @@ export default function PricingPage() {
     </SidebarProvider>
   )
 }
-
-    
