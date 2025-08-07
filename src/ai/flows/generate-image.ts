@@ -29,6 +29,16 @@ const GenerateImageInputSchema = z.object({
     .optional()
     .default(1)
     .describe('The number of images to generate.'),
+  referenceImages: z
+    .array(
+      z
+        .string()
+        .describe(
+          "A reference image as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+        )
+    )
+    .optional()
+    .describe('An array of reference image data URIs.'),
 });
 export type GenerateImageInput = z.infer<typeof GenerateImageInputSchema>;
 
@@ -60,12 +70,20 @@ const generateImageFlow = ai.defineFlow(
     const stylePrompt = styleInfo ? styleInfo.prompt : '';
     const modifiedPrompt = `${stylePrompt}, ${input.prompt}`;
 
+    const promptPayload: any[] = [];
+    if (input.referenceImages && input.referenceImages.length > 0) {
+      input.referenceImages.forEach((url) => {
+        promptPayload.push({media: {url}});
+      });
+    }
+    promptPayload.push({text: modifiedPrompt});
+
     const generationPromises = Array.from({
       length: input.numberOfImages || 1,
     }).map(async () => {
       const {media} = await ai.generate({
         model: 'googleai/gemini-2.0-flash-preview-image-generation',
-        prompt: modifiedPrompt,
+        prompt: promptPayload,
         config: {
           responseModalities: ['TEXT', 'IMAGE'],
         },

@@ -1,25 +1,28 @@
 
 "use client";
 
-import React, { useState, useTransition, useEffect } from 'react';
+import React, { useState, useTransition, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Header } from '@/components/header';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { generateImage } from '@/ai/flows/generate-image';
 import { suggestPrompt } from '@/ai/flows/suggest-prompt';
 import { useToast } from '@/hooks/use-toast';
-import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2 } from 'lucide-react';
+import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X } from 'lucide-react';
 import { STYLES, ASPECT_RATIOS, IMAGE_COUNTS } from '@/lib/options';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import { fileToDataUri } from '@/lib/utils';
+import { useDropzone } from 'react-dropzone';
 
 export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState<string>('cinematic');
   const [aspectRatio, setAspectRatio] = useState<string>('1:1');
   const [numberOfImages, setNumberOfImages] = useState<number>(1);
+  const [referenceImages, setReferenceImages] = useState<string[]>([]);
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [isGenerating, startGenerationTransition] = useTransition();
   const [isSuggesting, startSuggestionTransition] = useTransition();
@@ -27,11 +30,11 @@ export default function GeneratorPage() {
   const [initialRenderComplete, setInitialRenderComplete] = useState(false);
 
   const handleGenerate = () => {
-    if (!prompt.trim()) {
+    if (!prompt.trim() && referenceImages.length === 0) {
       toast({
         variant: 'destructive',
-        title: 'Prompt is required',
-        description: 'Please enter a prompt to generate an image.',
+        title: 'Prompt or image is required',
+        description: 'Please enter a prompt or upload an image to generate.',
       });
       return;
     }
@@ -39,7 +42,7 @@ export default function GeneratorPage() {
     startGenerationTransition(async () => {
       try {
         setGeneratedImages([]);
-        const result = await generateImage({ prompt, style, aspectRatio, numberOfImages });
+        const result = await generateImage({ prompt, style, aspectRatio, numberOfImages, referenceImages });
         setGeneratedImages(result.images);
       } catch (error) {
         console.error('Image generation failed:', error);
@@ -55,7 +58,7 @@ export default function GeneratorPage() {
 
   useEffect(() => {
     if (initialRenderComplete) {
-      if (prompt.trim()) {
+      if (prompt.trim() || referenceImages.length > 0) {
         handleGenerate();
       }
     } else {
@@ -79,9 +82,35 @@ export default function GeneratorPage() {
       }
     });
   };
+  
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (referenceImages.length + acceptedFiles.length > 10) {
+      toast({
+        variant: 'destructive',
+        title: 'Too many images',
+        description: 'You can upload a maximum of 10 images.',
+      });
+      return;
+    }
+    const dataUris = await Promise.all(acceptedFiles.map(fileToDataUri));
+    setReferenceImages(prev => [...prev, ...dataUris]);
+  }, [referenceImages.length, toast]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': ['.jpeg', '.png', '.gif', '.webp'] },
+    multiple: true,
+    maxFiles: 10,
+  });
+
+  const removeReferenceImage = (index: number) => {
+    setReferenceImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       handleGenerate();
     }
   };
@@ -99,18 +128,18 @@ export default function GeneratorPage() {
               <p className='text-muted-foreground md:text-lg'>Create stunning visuals with the power of AI.</p>
             </div>
              <div className="relative">
-              <Wand2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
+              <Textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="A vibrant synthwave cityscape..."
-                className="pl-10 pr-48 h-12 text-base rounded-full shadow-lg"
+                className="pl-4 pr-48 min-h-[52px] h-auto resize-none py-3 shadow-lg rounded-2xl"
+                rows={prompt.split('\n').length > 7 ? prompt.split('\n').length : 2}
                 disabled={isPending}
               />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              <div className="absolute right-2 top-3 flex items-center gap-2">
                 <Button variant="ghost" size="icon" onClick={handleSuggestPrompt} disabled={isPending} className="h-9 w-9 group rounded-full">
-                  {isSuggesting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />}
+                  {isSuggesting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Wand2 className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />}
                 </Button>
                 <Button
                   onClick={handleGenerate}
@@ -122,6 +151,38 @@ export default function GeneratorPage() {
                 </Button>
               </div>
             </div>
+
+            {/* Image Upload Section */}
+            <div className="space-y-4">
+              <div {...getRootProps()} className={`w-full p-6 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-border/80 hover:border-primary/50'}`}>
+                <input {...getInputProps()} />
+                <div className='flex flex-col items-center justify-center gap-2 text-muted-foreground'>
+                  <Upload className="h-8 w-8" />
+                  {isDragActive ?
+                    <p>Drop the files here ...</p> :
+                    <p>Drag 'n' drop some images here, or click to select files (up to 10)</p>
+                  }
+                </div>
+              </div>
+              {referenceImages.length > 0 && (
+                <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-2">
+                  {referenceImages.map((image, index) => (
+                    <div key={index} className="relative group">
+                      <Image src={image} alt={`Reference ${index + 1}`} width={80} height={80} className="rounded-md object-cover w-full aspect-square" />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => removeReferenceImage(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                <Select value={style} onValueChange={setStyle} disabled={isPending}>
                 <SelectTrigger className="w-full h-11 rounded-full shadow-sm">
@@ -138,7 +199,7 @@ export default function GeneratorPage() {
                <Select value={aspectRatio} onValueChange={setAspectRatio} disabled={isPending}>
                 <SelectTrigger className="w-full h-11 rounded-full shadow-sm">
                   <SelectValue placeholder="Select an aspect ratio" />
-                </SelectTrigger>
+                </Trigger>
                 <SelectContent>
                    {ASPECT_RATIOS.map((r) => (
                     <SelectItem key={r.value} value={r.value}>
