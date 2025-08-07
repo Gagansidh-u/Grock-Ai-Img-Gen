@@ -134,6 +134,7 @@ export default function GeneratorPage() {
   const isPending = isGenerating || isSuggesting;
   const promptRows = prompt.split('\n').length;
   const showSmallUploadButton = promptRows <= 2;
+  const hasReferenceImages = referenceImages.length > 0;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -145,16 +146,37 @@ export default function GeneratorPage() {
               <h1 className='text-3xl md:text-4xl font-bold tracking-tight'>AI Image Generator</h1>
               <p className='text-muted-foreground md:text-lg'>Create stunning visuals with the power of AI.</p>
             </div>
-             <div className="relative">
+             <div {...getRootProps()} className={`relative border-2 rounded-2xl transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-input'}`}>
+              {hasReferenceImages && (
+                <div className="p-2 flex flex-wrap gap-2">
+                  {referenceImages.map((image, index) => (
+                      <div key={index} className="relative group">
+                        <Image src={image} alt={`Reference ${index + 1}`} width={60} height={60} className="rounded-md object-cover w-auto h-auto" />
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 h-5 w-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation(); 
+                            removeReferenceImage(index)
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                </div>
+              )}
               <Textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="A vibrant synthwave cityscape..."
-                className="pl-4 pr-12 min-h-[52px] h-auto resize-none py-3 shadow-lg rounded-2xl"
+                placeholder={isDragActive ? "Drop the files here..." : "A vibrant synthwave cityscape..."}
+                className={`pl-4 pr-12 h-auto resize-none py-3 shadow-lg rounded-2xl border-none focus-visible:ring-0 focus-visible:ring-offset-0 ${hasReferenceImages ? 'pt-0' : ''}`}
                 rows={promptRows < 20 ? promptRows : 20}
                 disabled={isPending}
               />
+              <input {...getInputProps()} />
               <div className={`absolute right-2 flex items-center gap-2 ${showSmallUploadButton ? 'top-1/2 -translate-y-1/2' : 'bottom-3'}`}>
                  <Button variant="ghost" size="icon" onClick={openFileDialog} disabled={isPending} className="h-9 w-9 group rounded-full">
                    <Upload className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -177,38 +199,7 @@ export default function GeneratorPage() {
                 {isGenerating ? 'Generating...' : 'Generate'}
               </Button>
             </div>
-
-
-            {/* Image Upload Section */}
-            <div className="space-y-4">
-              <div {...getRootProps()} className={`w-full p-6 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-border/80 hover:border-primary/50'}`}>
-                <input {...getInputProps()} />
-                <div className='flex flex-col items-center justify-center gap-2 text-muted-foreground'>
-                  <Upload className="h-8 w-8" />
-                  {isDragActive ?
-                    <p>Drop the files here ...</p> :
-                    <p>Drag 'n' drop some images here, or click to select files (up to 10)</p>
-                  }
-                </div>
-              </div>
-              {referenceImages.length > 0 && (
-                <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-2">
-                  {referenceImages.map((image, index) => (
-                    <div key={index} className="relative group">
-                      <Image src={image} alt={`Reference ${index + 1}`} width={80} height={80} className="rounded-md object-cover w-full aspect-square" />
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => removeReferenceImage(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex flex-col gap-2">
                  <Label>Style</Label>
@@ -314,7 +305,3 @@ export default function GeneratorPage() {
     </div>
   );
 }
-
-    
-
-    
