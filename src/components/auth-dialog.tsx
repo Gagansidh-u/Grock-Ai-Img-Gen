@@ -11,7 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: "Please enter your name." }),
@@ -92,11 +92,11 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
              <Card className="w-full border-none shadow-none rounded-none">
                 <DialogHeader className="p-6 pb-2">
                     <DialogTitle className="text-2xl text-center">{authMode === 'signin' ? 'Welcome Back' : 'Create an Account'}</DialogTitle>
-                    <CardDescription className="text-center">
+                    <DialogDescription className="text-center">
                       {authMode === 'signin' 
                         ? 'Sign in to continue to TryQuad AI.' 
                         : 'Fill in the details to create your account.'}
-                    </CardDescription>
+                    </DialogDescription>
                 </DialogHeader>
                 <CardContent className="flex flex-col gap-4 p-6 pt-2">
                    <Form {...form}>
