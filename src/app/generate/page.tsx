@@ -51,23 +51,22 @@ export default function GeneratorPage() {
       });
       return;
     }
-    
-    if (user && userData) {
-        if (userData.imageCredits < numberOfImages && userData.plan !== 'Pro') {
-             toast({
-                variant: 'destructive',
-                title: 'Not enough credits',
-                description: `You need ${numberOfImages} credits to generate, but you only have ${userData.imageCredits}. Please upgrade your plan.`,
-                action: (
-                  <Button asChild>
-                    <Link href="/pricing">Upgrade</Link>
-                  </Button>
-                )
-            });
-            return;
-        }
-    }
 
+    if (user && userData) {
+      if (userData.plan !== 'Pro' && userData.imageCredits < numberOfImages) {
+        toast({
+          variant: 'destructive',
+          title: 'Not enough credits',
+          description: `You need ${numberOfImages} credits to generate, but you only have ${userData.imageCredits}. Please upgrade your plan.`,
+          action: (
+            <Button asChild>
+              <Link href="/pricing">Upgrade</Link>
+            </Button>
+          ),
+        });
+        return;
+      }
+    }
 
     startGenerationTransition(async () => {
       try {
@@ -75,7 +74,7 @@ export default function GeneratorPage() {
         const result = await generateImage({ prompt, style, aspectRatio, numberOfImages, referenceImages });
         setGeneratedImages(result.images);
         if (user && userData && userData.plan !== 'Pro') {
-            await updateImageCount(user.uid, numberOfImages);
+          await updateImageCount(user.uid, numberOfImages);
         }
       } catch (error) {
         console.error('Image generation failed:', error);
