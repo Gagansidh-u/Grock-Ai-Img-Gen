@@ -88,6 +88,7 @@ export default function PricingPage() {
 
   const handlePayment = async (plan: typeof plans[0]) => {
     setLoadingPlan(plan.name);
+
     try {
       const order = await createOrder({
         amount: plan.price * 100, // Amount in paise
@@ -96,6 +97,12 @@ export default function PricingPage() {
       
       if (!order) {
         throw new Error('Order creation failed');
+      }
+
+      if (!Razorpay) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Razorpay SDK not loaded.' });
+        setLoadingPlan(null);
+        return;
       }
 
       const options = {
@@ -115,17 +122,24 @@ export default function PricingPage() {
           });
           if(user) {
             router.push('/generate');
+          } else {
+             toast({
+                title: 'Payment Successful!',
+                description: `Enjoy your ${plan.name} plan benefits for this session.`,
+            });
           }
         },
         prefill: {
-          name: user?.displayName || 'Anonymous User',
-          email: user?.email || '',
+          name: user?.displayName || 'Guest User',
+          email: user?.email || 'guest@example.com',
         },
         theme: {
           color: '#8A2BE2',
         },
       };
+
       const rzp = new Razorpay(options);
+
       rzp.on('payment.failed', function (response: any) {
         toast({
           variant: 'destructive',
@@ -133,6 +147,7 @@ export default function PricingPage() {
           description: response.error.description,
         });
       });
+      
       rzp.open();
 
     } catch (error) {
@@ -236,11 +251,23 @@ export default function PricingPage() {
                       <CardFooter>
                          <Button
                           className="w-full"
-                          disabled={loadingPlan === plan.name || userData?.plan === plan.name}
+                          disabled={loadingPlan === plan.name || (!user && plan.name === 'Free') || (user && userData?.plan === plan.name)}
                           variant={plan.isPrimary ? 'default' : 'secondary'}
-                          onClick={() => plan.name !== 'Free' && handlePayment(plan)}
+                           onClick={() => {
+                            if (!user && plan.name !== 'Free') {
+                                router.push('/login?redirect=/pricing');
+                            } else if (plan.name !== 'Free') {
+                                handlePayment(plan);
+                            }
+                           }}
                         >
-                           {loadingPlan === plan.name ? <Loader2 className="animate-spin" /> : (userData?.plan === plan.name ? 'Current Plan' : plan.cta)}
+                           {loadingPlan === plan.name ? (
+                            <Loader2 className="animate-spin" />
+                            ) : (user && userData?.plan === plan.name) || (!user && plan.name === 'Free') ? (
+                            'Current Plan'
+                            ) : (
+                            plan.cta
+                            )}
                         </Button>
                       </CardFooter>
                     </Card>
