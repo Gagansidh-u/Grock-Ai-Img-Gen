@@ -70,7 +70,9 @@ const generateImageFlow = ai.defineFlow(
   async (input) => {
     const styleInfo = STYLES.find((s) => s.value === input.style);
     const stylePrompt = styleInfo ? styleInfo.prompt : '';
-    const modifiedPrompt = `${stylePrompt}, ${input.prompt}`;
+    
+    // Combine style and user prompt, ensuring clean output.
+    const modifiedPrompt = [stylePrompt, input.prompt.trim()].filter(Boolean).join(', ');
 
     const promptPayload: any[] = [];
     if (input.referenceImages && input.referenceImages.length > 0) {
@@ -78,7 +80,11 @@ const generateImageFlow = ai.defineFlow(
         promptPayload.push({media: {url}});
       });
     }
-    promptPayload.push({text: modifiedPrompt});
+    
+    // Only add a text part if there's a prompt to send.
+    if(modifiedPrompt) {
+        promptPayload.push({text: modifiedPrompt});
+    }
 
     const generationPromises = Array.from({
       length: input.numberOfImages || 1,
