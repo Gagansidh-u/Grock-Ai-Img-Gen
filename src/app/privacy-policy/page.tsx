@@ -162,8 +162,8 @@ export default function PrivacyPolicyPage() {
                 </div>
               <p className="text-muted-foreground">
                 &copy; {new Date().getFullYear()}{' '}
-                <a href="https://www.tryquad.com" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary">
-                  TryQuad Technologies
+                <a href="https://www.grock.fun" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary">
+                  Grock Technologies
                 </a>. All rights reserved.
               </p>
             </div>
@@ -173,5 +173,3 @@ export default function PrivacyPolicyPage() {
     </SidebarProvider>
   );
 }
-
-    

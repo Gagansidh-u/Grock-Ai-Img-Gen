@@ -107,7 +107,7 @@ export default function LandingPage() {
                   Unleash Your Creativity with TryQuad AI
                 </h1>
                 <p className="max-w-2xl text-lg md:text-xl text-muted-foreground">
-                  Welcome to the TryQuad AI Image Generator, brought to you by TryQuad Technologies. Transform your text prompts into stunning visual art, logos, and more. Effortlessly create, customize, and download unique images in seconds.
+                  Welcome to the TryQuad AI Image Generator, brought to you by Grock Technologies. Transform your text prompts into stunning visual art, logos, and more. Effortlessly create, customize, and download unique images in seconds.
                 </p>
                 <Button size="lg" className="font-semibold text-lg group" asChild>
                   <Link href="/generate">
@@ -202,12 +202,12 @@ export default function LandingPage() {
               <p className="text-muted-foreground">
                 &copy; {new Date().getFullYear()}{' '}
                 <a
-                  href="https://www.tryquad.com"
+                  href="https://www.grock.fun"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:underline hover:text-primary"
                 >
-                  TryQuad Technologies
+                  Grock Technologies
                 </a>
                 . All rights reserved.
               </p>

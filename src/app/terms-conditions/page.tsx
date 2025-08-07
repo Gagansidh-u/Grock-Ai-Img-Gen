@@ -32,7 +32,7 @@ const termsSections = [
     {
         icon: <Zap className="h-6 w-6 text-primary" />,
         title: "5. Intellectual Property",
-        content: "The Service and its original content, features, and functionality are the exclusive property of TryQuad Technologies and are protected by copyright and trademark laws."
+        content: "The Service and its original content, features, and functionality are the exclusive property of Grock Technologies and are protected by copyright and trademark laws."
     },
     {
         icon: <FileX className="h-6 w-6 text-primary" />,
@@ -42,7 +42,7 @@ const termsSections = [
     {
         icon: <Shield className="h-6 w-6 text-primary" />,
         title: "7. Disclaimer and Limitation of Liability",
-        content: "The Service is provided 'as is' without warranties of any kind. TryQuad Technologies shall not be liable for any indirect, incidental, or consequential damages resulting from your use of the service."
+        content: "The Service is provided 'as is' without warranties of any kind. Grock Technologies shall not be liable for any indirect, incidental, or consequential damages resulting from your use of the service."
     },
     {
         icon: <Scale className="h-6 w-6 text-primary" />,
@@ -161,8 +161,8 @@ export default function TermsConditionsPage() {
                 </div>
               <p className="text-muted-foreground">
                 &copy; {new Date().getFullYear()}{' '}
-                <a href="https://www.tryquad.com" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary">
-                  TryQuad Technologies
+                <a href="https://www.grock.fun" target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-primary">
+                  Grock Technologies
                 </a>. All rights reserved.
               </p>
             </div>
@@ -172,5 +172,3 @@ export default function TermsConditionsPage() {
     </SidebarProvider>
   );
 }
-
-    
