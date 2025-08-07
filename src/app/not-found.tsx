@@ -73,7 +73,7 @@ export default function NotFoundPage() {
           >
             <h1
               className="text-[12rem] font-extrabold tracking-tighter text-primary md:text-[16rem] flex"
-              style={{ textShadow: '0 10px 40px hsla(var(--primary), 0.3)' }}
+              style={{ textShadow: '0 0 2px hsl(var(--foreground)), 0 0 4px hsl(var(--foreground)), 0 10px 40px hsla(var(--primary), 0.3)' }}
             >
               {['4', '0', '4'].map((char, index) => (
                  <motion.span
