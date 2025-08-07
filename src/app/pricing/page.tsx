@@ -87,10 +87,6 @@ export default function PricingPage() {
   const router = useRouter();
 
   const handlePayment = async (plan: typeof plans[0]) => {
-    if (!user) {
-      router.push('/login?redirect=/pricing');
-      return;
-    }
     setLoadingPlan(plan.name);
     try {
       const order = await createOrder({
@@ -110,16 +106,20 @@ export default function PricingPage() {
         description: `${plan.name} Plan`,
         order_id: order.id,
         handler: async (response: any) => {
-          await updateUserPlan(user.uid, plan.name as UserProfile['plan']);
+          if (user) {
+            await updateUserPlan(user.uid, plan.name as UserProfile['plan']);
+          }
           toast({
             title: 'Payment Successful!',
             description: `You have successfully upgraded to the ${plan.name} plan.`,
           });
-           router.push('/generate');
+          if(user) {
+            router.push('/generate');
+          }
         },
         prefill: {
-          name: user.displayName || 'Grock AI User',
-          email: user.email || '',
+          name: user?.displayName || 'Anonymous User',
+          email: user?.email || '',
         },
         theme: {
           color: '#8A2BE2',
@@ -254,5 +254,3 @@ export default function PricingPage() {
     </SidebarProvider>
   )
 }
-
-    
