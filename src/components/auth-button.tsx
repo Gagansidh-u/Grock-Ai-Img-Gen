@@ -1,3 +1,4 @@
+
 // src/components/auth-button.tsx
 "use client";
 
@@ -15,16 +16,18 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Skeleton } from './ui/skeleton';
 import { LogOut, User as UserIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export function AuthButton() {
-  const { user, loading, signIn, signOut } = useAuth();
+  const { user, loading, signOut } = useAuth();
+  const router = useRouter();
 
   if (loading) {
     return <Skeleton className="h-10 w-24" />;
   }
 
   if (!user) {
-    return <Button onClick={signIn}>Login</Button>;
+    return <Button onClick={() => router.push('/login')}>Login</Button>;
   }
 
   return (

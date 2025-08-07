@@ -30,15 +30,14 @@ const features = [
 ];
 
 export default function LandingPage() {
-  const { user, signIn } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
-  const handleGetStarted = async () => {
+  const handleGetStarted = () => {
     if (user) {
       router.push('/generate');
     } else {
-      await signIn();
-      router.push('/generate');
+      router.push('/login');
     }
   };
 
