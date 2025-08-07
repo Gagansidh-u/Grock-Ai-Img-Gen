@@ -1,3 +1,4 @@
+
 // src/hooks/use-auth.tsx
 "use client";
 
@@ -21,13 +22,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const userProfile = await getUserProfile(user.uid);
-        if (!userProfile) {
-          await createUserProfile(user);
-        }
-      }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
@@ -35,21 +30,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signIn = async () => {
+    setLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      if (user) {
+        const userProfile = await getUserProfile(user.uid);
+        if (!userProfile) {
+          await createUserProfile(user);
+        }
+        setUser(user); // Manually set user to trigger redirect faster
+      }
     } catch (error: any) {
       console.error("Error signing in with Google: ", error);
       toast({
         variant: 'destructive',
         title: 'Authentication Failed',
         description: error.message,
-      })
+      });
+    } finally {
+       setLoading(false);
     }
   };
 
   const signOut = async () => {
     try {
       await auth.signOut();
+      setUser(null);
     } catch (error: any) {
       console.error("Error signing out: ", error);
        toast({

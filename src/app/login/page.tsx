@@ -40,7 +40,8 @@ function LoginPageContent() {
       // The useEffect will handle redirection on successful sign-in
     } catch (error) {
       console.error("Sign in failed", error);
-      setIsSigningIn(false);
+    } finally {
+        // Don't set isSigningIn to false here, because redirection will happen
     }
   };
 
@@ -49,7 +50,7 @@ function LoginPageContent() {
     return (
       <div className="flex flex-col min-h-screen bg-background items-center justify-center">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Redirecting to your creative space...</p>
+        <p className="mt-4 text-muted-foreground">Please wait...</p>
       </div>
     );
   }
