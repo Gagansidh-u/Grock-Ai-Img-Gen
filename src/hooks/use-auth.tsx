@@ -56,6 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const signInWithGoogle = async () => {
+    setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
       await handleUserCreation(result.user);
@@ -67,10 +68,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         description: error.message,
       });
       throw error;
+    } finally {
+        setLoading(false);
     }
   };
 
   const signUpWithEmailPassword = async (credentials: AuthCredentials) => {
+    setLoading(true);
     try {
       const result = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
       await handleUserCreation(result.user);
@@ -82,11 +86,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         description: error.message,
       });
       throw error;
+    } finally {
+        setLoading(false);
     }
   }
 
   const signInWithEmailPassword = async (credentials: AuthCredentials) => {
-     try {
+    setLoading(true);
+    try {
       await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
     } catch (error: any) {
        console.error("Error signing in: ", error);
@@ -96,6 +103,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         description: error.message,
       });
       throw error;
+    } finally {
+        setLoading(false);
     }
   }
 
