@@ -26,7 +26,12 @@ import { motion } from 'framer-motion';
 import { CreditUsage } from '@/components/credit-usage';
 import { Header } from '@/components/header';
 import { updateImageCount } from '@/lib/firestore';
+import type { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: 'AI Image Generator',
+  description: 'Create stunning visuals with the power of AI. Enter a text prompt, select styles, and generate unique, high-quality images in seconds.',
+};
 
 export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
@@ -410,5 +415,3 @@ export default function GeneratorPage() {
     </SidebarProvider>
   );
 }
-
-    

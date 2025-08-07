@@ -124,7 +124,8 @@ export default function LandingPage() {
                             alt="AI generated image of a futuristic landscape"
                             width={1200}
                             height={600}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            sizes="100vw"
+                            priority
                             className="rounded-lg object-cover"
                         />
                     </CardContent>
