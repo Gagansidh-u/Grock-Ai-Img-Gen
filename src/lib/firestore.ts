@@ -1,3 +1,4 @@
+
 // src/lib/firestore.ts
 import { db } from './firebase';
 import { doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -14,7 +15,7 @@ export interface UserProfile {
   lastDailyReset: Timestamp;
   createdAt: any;
   updatedAt: any;
-  apiKeyNumber: number | null;
+  apiKeyNumber: number;
 }
 
 export const getCreditsForPlan = (plan: UserProfile['plan']) => {
@@ -44,7 +45,7 @@ export const createUserProfile = async (user: User, displayName?: string | null)
     lastDailyReset: Timestamp.now(),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    apiKeyNumber: null,
+    apiKeyNumber: 0,
   };
   await setDoc(userRef, userProfile);
 };
@@ -74,8 +75,8 @@ export const updateUserProfileFields = async (uid: string, plan: UserProfile['pl
         updates.displayName = displayName;
     }
 
-    if (!existingData || !existingData.hasOwnProperty('apiKeyNumber')) {
-        updates.apiKeyNumber = null;
+    if (!existingData || !existingData.hasOwnProperty('apiKeyNumber') || existingData.apiKeyNumber === null) {
+        updates.apiKeyNumber = 0;
     }
 
     await setDoc(userRef, updates, { merge: true });

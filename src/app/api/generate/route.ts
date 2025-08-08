@@ -1,3 +1,4 @@
+
 // src/app/api/generate/route.ts
 import { generateImage, GenerateImageInput } from '@/ai/flows/generate-image';
 import { getUserProfile } from '@/lib/firestore';
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'User profile not found.' }, { status: 404 });
     }
 
-    if (userProfile.apiKeyNumber === null) {
+    if (userProfile.apiKeyNumber === 0) {
       return NextResponse.json({ error: 'API key not configured for this user. Please add it in your profile.' }, { status: 403 });
     }
 

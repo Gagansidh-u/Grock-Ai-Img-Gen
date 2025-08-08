@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useTransition, useCallback } from 'react';
@@ -48,7 +49,7 @@ export default function GeneratorPage() {
         return;
     }
 
-    if (userData?.apiKeyNumber === null) {
+    if (userData?.apiKeyNumber === 0) {
       setIsActivationDialogOpen(true);
       return;
     }
@@ -143,7 +144,7 @@ export default function GeneratorPage() {
         return;
     }
     
-    if (userData?.apiKeyNumber === null) {
+    if (userData?.apiKeyNumber === 0) {
       setIsActivationDialogOpen(true);
       return;
     }
