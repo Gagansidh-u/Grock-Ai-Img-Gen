@@ -81,11 +81,12 @@ export const updateUserProfileFields = async (uid: string, plan: UserProfile['pl
         updates.displayName = displayName;
     }
     
+    // Use `hasOwnProperty` for robust checking
     if (!existingData.hasOwnProperty('apiKeyNumber')) {
         updates.apiKeyNumber = await getNextAvailableApiKeyNumber();
     }
 
-    if (Object.keys(updates).length > 1) {
+    if (Object.keys(updates).length > 1) { // Only update if there are changes
       await updateDoc(userRef, updates);
     }
 }

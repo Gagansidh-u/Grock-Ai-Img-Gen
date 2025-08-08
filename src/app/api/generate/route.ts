@@ -1,3 +1,4 @@
+
 // src/app/api/generate/route.ts
 import { generateImage, GenerateImageInput } from '@/ai/flows/generate-image';
 import { getUserProfile } from '@/lib/firestore';
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'User profile not found.' }, { status: 404 });
     }
     
-    if (!userProfile.apiKeyNumber) {
+    if (!userProfile.apiKeyNumber) { // Handles both 0 and undefined/null cases
         return NextResponse.json({ error: 'User account is not activated. Please contact support.' }, { status: 403 });
     }
 
@@ -34,7 +35,8 @@ export async function POST(request: Request) {
     return NextResponse.json(result);
   } catch (error: any) {
     console.error('API route error:', error);
-    // Provide a generic error message to the client
-    return NextResponse.json({ error: error.message || 'Failed to generate image. Please try again later.' }, { status: 500 });
+    // Provide a more specific error message if available
+    const errorMessage = error.message || 'Failed to generate image. Please try again later.';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

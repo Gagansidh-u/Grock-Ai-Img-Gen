@@ -30,6 +30,7 @@ export function getApiKey(keyNumber?: number | null): string {
             return key;
         }
     }
+    // Fallback to a default key if the user's key isn't found or is invalid
     return process.env.GEMINI_API_KEY_FALLBACK!;
 }
 
@@ -69,3 +70,4 @@ export async function getNextAvailableApiKeyNumber(): Promise<number> {
 
     return 0; // All keys are assigned
 }
+
