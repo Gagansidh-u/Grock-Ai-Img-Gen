@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as Omit<GenerateImageInput, 'plan'> & { userId: string };
+    const body = (await request.json()) as Omit<GenerateImageInput, 'plan' | 'apiKeyNumber'> & { userId: string };
     
     if (!body.prompt && (!body.referenceImages || body.referenceImages.length === 0)) {
         return NextResponse.json({ error: 'A prompt or reference image is required.' }, { status: 400 });
@@ -20,10 +20,15 @@ export async function POST(request: Request) {
     if (!userProfile) {
         return NextResponse.json({ error: 'User profile not found.' }, { status: 404 });
     }
+    
+    if (!userProfile.apiKeyNumber) {
+        return NextResponse.json({ error: 'User account is not activated. Please contact support.' }, { status: 403 });
+    }
 
     const result = await generateImage({
       ...body,
       plan: userProfile.plan,
+      apiKeyNumber: userProfile.apiKeyNumber,
     });
 
     return NextResponse.json(result);

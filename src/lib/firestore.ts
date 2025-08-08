@@ -2,6 +2,7 @@
 import { db } from './firebase';
 import { doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
 import type { User } from 'firebase/auth';
+import { getNextAvailableApiKeyNumber } from './api-keys';
 
 export interface UserProfile {
   uid: string;
@@ -12,6 +13,7 @@ export interface UserProfile {
   monthlyPlanRenewalDate: Timestamp;
   dailyImageCredits: number;
   lastDailyReset: Timestamp;
+  apiKeyNumber: number; // 0 means not assigned
   createdAt: any;
   updatedAt: any;
 }
@@ -31,16 +33,18 @@ export const createUserProfile = async (user: User, displayName?: string | null)
   const monthlyRenewalDate = new Date();
   monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
   const credits = getCreditsForPlan('Free');
+  const apiKeyNumber = await getNextAvailableApiKeyNumber();
 
   const userProfile: Omit<UserProfile, 'createdAt' | 'updatedAt'> = {
     uid: user.uid,
     email: user.email,
-    displayName: displayName || user.displayName,
+    displayName: displayName || user.displayName || 'TryQuad User',
     plan: 'Free',
     monthlyImageCredits: credits.monthly,
     monthlyPlanRenewalDate: Timestamp.fromDate(monthlyRenewalDate),
     dailyImageCredits: credits.daily,
     lastDailyReset: Timestamp.now(),
+    apiKeyNumber: apiKeyNumber,
   };
   await setDoc(userRef, {
     ...userProfile,
@@ -59,7 +63,9 @@ export const updateUserProfileFields = async (uid: string, plan: UserProfile['pl
         updatedAt: serverTimestamp(),
     };
 
-    if (!existingData || !existingData.plan) {
+    if (!existingData) return;
+
+    if (!existingData.plan) {
         const credits = getCreditsForPlan(plan);
         const monthlyRenewalDate = new Date();
         monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
@@ -70,12 +76,16 @@ export const updateUserProfileFields = async (uid: string, plan: UserProfile['pl
         updates.lastDailyReset = Timestamp.now();
     }
     
-    if (displayName && (!existingData || !existingData.displayName)) {
+    if (displayName && !existingData.displayName) {
         updates.displayName = displayName;
+    }
+    
+    if (!existingData.hasOwnProperty('apiKeyNumber')) {
+        updates.apiKeyNumber = await getNextAvailableApiKeyNumber();
     }
 
     if (Object.keys(updates).length > 1) {
-      await setDoc(userRef, updates, { merge: true });
+      await updateDoc(userRef, updates);
     }
 }
 
