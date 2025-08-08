@@ -6,6 +6,8 @@
  * - suggestPrompt - A function that returns a creative prompt for image generation.
  * - SuggestPromptOutput - The return type for the suggestPrompt function.
  */
+import { config } from 'dotenv';
+config();
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
