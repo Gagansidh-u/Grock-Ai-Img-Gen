@@ -1,9 +1,10 @@
+
 // src/hooks/use-user-data.ts
 import { useState, useEffect } from 'react';
 import { useAuth } from './use-auth';
 import { db } from '@/lib/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { UserProfile, resetUserCredits } from '@/lib/firestore';
+import { UserProfile, resetDailyCredits, resetMonthlyCredits } from '@/lib/firestore';
 
 export const useUserData = () => {
   const { user } = useAuth();
@@ -16,21 +17,27 @@ export const useUserData = () => {
     if (user) {
       setLoading(true);
       const userRef = doc(db, 'users', user.uid);
-      unsubscribe = onSnapshot(userRef, (docSnap) => {
+      unsubscribe = onSnapshot(userRef, async (docSnap) => {
         if (docSnap.exists()) {
           const profile = docSnap.data() as UserProfile;
-          
-          // Check for monthly credit reset
           const now = new Date();
-          const renewalDate = profile.planRenewalDate.toDate();
-          if (now > renewalDate) {
-              // Reset credits if renewal date has passed
-              resetUserCredits(user.uid, profile.plan).then(() => {
-                  // The onSnapshot listener will pick up the change automatically
-              });
-          } else {
-             setUserData(profile);
+          
+          const monthlyRenewalDate = profile.monthlyPlanRenewalDate.toDate();
+          if (now >= monthlyRenewalDate) {
+              await resetMonthlyCredits(user.uid, profile.plan);
+              // The listener will pick up the changes, so we don't set state here.
+              return; // Exit to avoid processing old data
           }
+          
+          const dailyResetDate = profile.lastDailyReset.toDate();
+          const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          if (dailyResetDate < startOfToday) {
+              await resetDailyCredits(user.uid, profile.plan);
+              // The listener will pick up the changes.
+              return; // Exit to avoid processing old data
+          }
+          
+          setUserData(profile);
 
         } else {
           setUserData(null);
@@ -51,3 +58,5 @@ export const useUserData = () => {
 
   return { userData, loading };
 };
+
+    

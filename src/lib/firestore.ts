@@ -9,25 +9,39 @@ export interface UserProfile {
   email: string | null;
   displayName: string | null;
   plan: 'Free' | 'Basic' | 'Standard' | 'Pro';
-  imageCredits: number;
-  planRenewalDate: Timestamp;
+  monthlyImageCredits: number;
+  monthlyPlanRenewalDate: Timestamp;
+  dailyImageCredits: number;
+  lastDailyReset: Timestamp;
   createdAt: any;
   updatedAt: any;
+}
+
+export const getCreditsForPlan = (plan: UserProfile['plan']) => {
+    switch (plan) {
+        case 'Pro': return { monthly: 775, daily: 25 };
+        case 'Standard': return { monthly: 250, daily: 15 };
+        case 'Basic': return { monthly: 100, daily: 10 };
+        default: return { monthly: 8, daily: 8 }; // Free plan
+    }
 }
 
 // Create a new user profile in Firestore
 export const createUserProfile = async (user: User, displayName?: string | null): Promise<void> => {
   const userRef = doc(db, 'users', user.uid);
-  const renewalDate = new Date();
-  renewalDate.setMonth(renewalDate.getMonth() + 1);
+  const monthlyRenewalDate = new Date();
+  monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
+  const credits = getCreditsForPlan('Free');
 
   const userProfile: UserProfile = {
     uid: user.uid,
     email: user.email,
     displayName: displayName || user.displayName,
     plan: 'Free',
-    imageCredits: 8,
-    planRenewalDate: Timestamp.fromDate(renewalDate),
+    monthlyImageCredits: credits.monthly,
+    monthlyPlanRenewalDate: Timestamp.fromDate(monthlyRenewalDate),
+    dailyImageCredits: credits.daily,
+    lastDailyReset: Timestamp.now(),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
@@ -35,18 +49,20 @@ export const createUserProfile = async (user: User, displayName?: string | null)
 };
 
 // Backfill missing fields for an existing user
-export const updateUserProfileFields = async (uid: string): Promise<void> => {
+export const updateUserProfileFields = async (uid: string, plan: UserProfile['plan']): Promise<void> => {
     const userRef = doc(db, 'users', uid);
-    const renewalDate = new Date();
-    renewalDate.setMonth(renewalDate.getMonth() + 1);
+    const monthlyRenewalDate = new Date();
+    monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
+    const credits = getCreditsForPlan(plan);
 
     const defaultFields = {
-        plan: 'Free',
-        imageCredits: 8,
-        planRenewalDate: Timestamp.fromDate(renewalDate),
+        plan: plan,
+        monthlyImageCredits: credits.monthly,
+        monthlyPlanRenewalDate: Timestamp.fromDate(monthlyRenewalDate),
+        dailyImageCredits: credits.daily,
+        lastDailyReset: Timestamp.now(),
         updatedAt: serverTimestamp(),
     };
-    // Use set with merge:true to add new fields without overwriting existing ones
     await setDoc(userRef, defaultFields, { merge: true });
 }
 
@@ -64,45 +80,55 @@ export const getUserProfile = async (uid: string): Promise<UserProfile | null> =
 export const updateImageCount = async (uid: string, count: number): Promise<void> => {
     const userRef = doc(db, 'users', uid);
     await updateDoc(userRef, {
-        imageCredits: increment(-count),
+        monthlyImageCredits: increment(-count),
+        dailyImageCredits: increment(-count),
         updatedAt: serverTimestamp()
     });
 };
 
-const getCreditsForPlan = (plan: UserProfile['plan']) => {
-    switch (plan) {
-        case 'Basic': return 100;
-        case 'Standard': return 250;
-        case 'Pro': return Infinity; // Using Infinity for Pro plan
-        default: return 8; // Free plan
-    }
-}
 
 // Update user plan and reset credits
 export const updateUserPlan = async (uid: string, plan: UserProfile['plan']): Promise<void> => {
     const userRef = doc(db, 'users', uid);
-    const newCredits = getCreditsForPlan(plan);
-    const renewalDate = new Date();
-    renewalDate.setMonth(renewalDate.getMonth() + 1);
+    const credits = getCreditsForPlan(plan);
+    const monthlyRenewalDate = new Date();
+    monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
 
     await updateDoc(userRef, {
         plan: plan,
-        imageCredits: newCredits,
-        planRenewalDate: Timestamp.fromDate(renewalDate),
+        monthlyImageCredits: credits.monthly,
+        monthlyPlanRenewalDate: Timestamp.fromDate(monthlyRenewalDate),
+        dailyImageCredits: credits.daily,
+        lastDailyReset: Timestamp.now(),
         updatedAt: serverTimestamp()
     });
 };
 
-// Reset credits for a user
-export const resetUserCredits = async (uid: string, plan: UserProfile['plan']): Promise<void> => {
+// Reset only daily credits
+export const resetDailyCredits = async (uid: string, plan: UserProfile['plan']): Promise<void> => {
     const userRef = doc(db, 'users', uid);
-    const newCredits = getCreditsForPlan(plan);
-    const renewalDate = new Date();
-    renewalDate.setMonth(renewalDate.getMonth() + 1);
+    const credits = getCreditsForPlan(plan);
+    await updateDoc(userRef, {
+        dailyImageCredits: credits.daily,
+        lastDailyReset: Timestamp.now(),
+        updatedAt: serverTimestamp()
+    });
+};
+
+// Reset monthly credits (and daily)
+export const resetMonthlyCredits = async (uid: string, plan: UserProfile['plan']): Promise<void> => {
+    const userRef = doc(db, 'users', uid);
+    const credits = getCreditsForPlan(plan);
+    const monthlyRenewalDate = new Date();
+    monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
 
     await updateDoc(userRef, {
-        imageCredits: newCredits,
-        planRenewalDate: Timestamp.fromDate(renewalDate),
+        monthlyImageCredits: credits.monthly,
+        monthlyPlanRenewalDate: Timestamp.fromDate(monthlyRenewalDate),
+        dailyImageCredits: credits.daily,
+        lastDailyReset: Timestamp.now(),
         updatedAt: serverTimestamp()
     });
 };
+
+    

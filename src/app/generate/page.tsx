@@ -58,16 +58,24 @@ export default function GeneratorPage() {
     }
 
     if (userData) {
-      if (userData.plan !== 'Pro' && userData.imageCredits < numberOfImages) {
+      if (userData.plan !== 'Pro' && userData.monthlyImageCredits < numberOfImages) {
         toast({
           variant: 'destructive',
-          title: 'Not enough credits',
-          description: `You need ${numberOfImages} credits to generate, but you only have ${userData.imageCredits}. Please upgrade your plan.`,
+          title: 'Not enough monthly credits',
+          description: `You need ${numberOfImages} credits to generate, but you only have ${userData.monthlyImageCredits} for the month. Please upgrade your plan.`,
           action: (
             <Button asChild>
               <Link href="/pricing">Upgrade</Link>
             </Button>
           ),
+        });
+        return;
+      }
+      if (userData.plan !== 'Pro' && userData.dailyImageCredits < numberOfImages) {
+        toast({
+          variant: 'destructive',
+          title: 'Daily limit reached',
+          description: `You have ${userData.dailyImageCredits} daily credits remaining. Your credits will reset at 12:00 AM.`,
         });
         return;
       }
