@@ -13,11 +13,18 @@ export async function POST(request: Request) {
     }
 
     let userPlan: GenerateImageInput['plan'] = 'Free';
+    let userApiKey: string | undefined;
+
     if (body.userId) {
       const userProfile = await getUserProfile(body.userId);
       if (userProfile) {
         userPlan = userProfile.plan;
+        userApiKey = userProfile.apiKey;
       }
+    }
+
+    if (!userApiKey) {
+      return NextResponse.json({ error: 'API key not configured for this user. Please add it in your profile.' }, { status: 403 });
     }
 
     const result = await generateImage({
@@ -27,13 +34,14 @@ export async function POST(request: Request) {
       numberOfImages: body.numberOfImages,
       referenceImages: body.referenceImages,
       userId: body.userId,
-      plan: userPlan
+      plan: userPlan,
+      userApiKey: userApiKey,
     });
 
     return NextResponse.json(result);
   } catch (error: any) {
     console.error('API route error:', error);
     // Provide a generic error message to the client
-    return NextResponse.json({ error: 'Failed to generate image. Please try again later.' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to generate image. Please try again later.' }, { status: 500 });
   }
 }

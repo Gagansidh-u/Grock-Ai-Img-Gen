@@ -10,6 +10,8 @@
 import { config } from 'dotenv';
 config();
 
+import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import {STYLES} from '@/lib/options';
@@ -44,6 +46,7 @@ const GenerateImageInputSchema = z.object({
     .describe('An array of reference image data URIs.'),
   userId: z.string().optional().describe('The ID of the user generating the image.'),
   plan: z.enum(['Free', 'Basic', 'Standard', 'Pro']).optional().default('Free').describe('The user\'s subscription plan.'),
+  userApiKey: z.string().optional().describe('The user-specific API key for Gemini.'),
 });
 export type GenerateImageInput = z.infer<typeof GenerateImageInputSchema>;
 
@@ -80,6 +83,15 @@ const generateImageFlow = ai.defineFlow(
     outputSchema: GenerateImageOutputSchema,
   },
   async (input) => {
+    if (!input.userApiKey) {
+        throw new Error('An API key is required for image generation.');
+    }
+    
+    // Create a temporary, request-specific Genkit instance with the user's API key.
+    const userAi = genkit({
+      plugins: [googleAI({ apiKey: input.userApiKey })],
+    });
+
     const styleInfo = STYLES.find((s) => s.value === input.style);
     const stylePrompt = styleInfo ? styleInfo.prompt : '';
     
@@ -113,7 +125,7 @@ const generateImageFlow = ai.defineFlow(
     const generationPromises = Array.from({
       length: input.numberOfImages || 1,
     }).map(async () => {
-      const {media} = await ai.generate({
+      const {media} = await userAi.generate({
         model: 'googleai/gemini-2.0-flash-preview-image-generation',
         prompt: promptPayload,
         config: {

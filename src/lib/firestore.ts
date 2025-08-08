@@ -1,4 +1,3 @@
-
 // src/lib/firestore.ts
 import { db } from './firebase';
 import { doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -15,6 +14,7 @@ export interface UserProfile {
   lastDailyReset: Timestamp;
   createdAt: any;
   updatedAt: any;
+  apiKey?: string;
 }
 
 export const getCreditsForPlan = (plan: UserProfile['plan']) => {
@@ -130,5 +130,3 @@ export const resetMonthlyCredits = async (uid: string, plan: UserProfile['plan']
         updatedAt: serverTimestamp()
     });
 };
-
-    
