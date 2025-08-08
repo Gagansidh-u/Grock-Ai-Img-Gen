@@ -5,37 +5,31 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as GenerateImageInput;
+    const body = (await request.json()) as Omit<GenerateImageInput, 'plan' | 'userApiKey'>;
     
     // Ensure the input is valid before passing to the flow
     if (!body.prompt && (!body.referenceImages || body.referenceImages.length === 0)) {
         return NextResponse.json({ error: 'A prompt or reference image is required.' }, { status: 400 });
     }
 
-    let userPlan: GenerateImageInput['plan'] = 'Free';
-    let userApiKey: string | undefined;
-
-    if (body.userId) {
-      const userProfile = await getUserProfile(body.userId);
-      if (userProfile) {
-        userPlan = userProfile.plan;
-        userApiKey = userProfile.apiKey;
-      }
+    if (!body.userId) {
+      return NextResponse.json({ error: 'User not authenticated.' }, { status: 401 });
     }
 
-    if (!userApiKey) {
+    const userProfile = await getUserProfile(body.userId);
+
+    if (!userProfile) {
+        return NextResponse.json({ error: 'User profile not found.' }, { status: 404 });
+    }
+
+    if (!userProfile.apiKey) {
       return NextResponse.json({ error: 'API key not configured for this user. Please add it in your profile.' }, { status: 403 });
     }
 
     const result = await generateImage({
-      prompt: body.prompt,
-      style: body.style,
-      aspectRatio: body.aspectRatio,
-      numberOfImages: body.numberOfImages,
-      referenceImages: body.referenceImages,
-      userId: body.userId,
-      plan: userPlan,
-      userApiKey: userApiKey,
+      ...body,
+      plan: userProfile.plan,
+      userApiKey: userProfile.apiKey,
     });
 
     return NextResponse.json(result);
