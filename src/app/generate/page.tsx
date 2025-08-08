@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useTransition, useCallback } from 'react';
+import React, from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -310,7 +310,7 @@ export default function GeneratorPage() {
                 <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
                   <Button variant="outline" size="lg" onClick={handleImprovePrompt} disabled={isPending || !prompt.trim()} className="group rounded-full w-full sm:w-auto border-dashed hover:border-solid hover:border-primary">
                     {isImproving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Wand2 className="h-5 w-5 mr-2 text-muted-foreground group-hover:text-primary transition-colors" />}
-                    Improve Prompt
+                    Improve Prompt with Ai
                   </Button>
                   <Button
                     onClick={handleGenerate}
@@ -438,3 +438,5 @@ export default function GeneratorPage() {
     </>
   );
 }
+
+    
