@@ -33,6 +33,16 @@ const suggestPromptFlow = ai.defineFlow(
       model: 'googleai/gemini-2.0-flash',
       config: {
         temperature: 1.2, // Increase creativity
+        safetySettings: [
+            {
+              category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+              threshold: 'BLOCK_NONE',
+            },
+            {
+              category: 'HARM_CATEGORY_HARASSMENT',
+              threshold: 'BLOCK_NONE',
+            },
+          ],
       },
     });
 
