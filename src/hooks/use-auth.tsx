@@ -1,4 +1,3 @@
-
 // src/hooks/use-auth.tsx
 "use client";
 
@@ -59,7 +58,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        await handleUserVerification(user);
+        await handleUserVerification(user, user.displayName);
         setUser(user);
       } else {
         setUser(null);

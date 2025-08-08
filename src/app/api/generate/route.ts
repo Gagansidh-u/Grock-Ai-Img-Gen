@@ -1,4 +1,3 @@
-
 // src/app/api/generate/route.ts
 import { generateImage, GenerateImageInput } from '@/ai/flows/generate-image';
 import { getUserProfile } from '@/lib/firestore';
