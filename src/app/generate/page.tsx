@@ -10,7 +10,7 @@ import { suggestPrompt } from '@/ai/flows/suggest-prompt';
 import { improvePrompt } from '@/ai/flows/improve-prompt';
 import { useToast } from '@/hooks/use-toast';
 import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X, Home, Gem, ShieldAlert } from 'lucide-react';
-import { STYLES, ASPECT_RATIOS, IMAGE_COUNTS } from '@/lib/options';
+import { STYLES, ASPECT_RATIOS } from '@/lib/options';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { fileToDataUri } from '@/lib/utils';
@@ -33,7 +33,6 @@ export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState<string>('cinematic');
   const [aspectRatio, setAspectRatio] = useState<string>('1:1');
-  const [numberOfImages, setNumberOfImages] = useState<number>(1);
   const [referenceImages, setReferenceImages] = useState<string[]>([]);
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [isGenerating, startGenerationTransition] = useTransition();
@@ -65,11 +64,11 @@ export default function GeneratorPage() {
     }
 
     if (userData) {
-      if (userData.plan !== 'Pro' && userData.monthlyImageCredits < numberOfImages) {
+      if (userData.plan !== 'Pro' && userData.monthlyImageCredits < 1) {
         toast({
           variant: 'destructive',
           title: 'Not enough monthly credits',
-          description: `You need ${numberOfImages} credits to generate, but you only have ${userData.monthlyImageCredits} for the month. Please upgrade your plan.`,
+          description: `You need 1 credit to generate, but you only have ${userData.monthlyImageCredits} for the month. Please upgrade your plan.`,
           action: (
             <Button asChild>
               <Link href="/pricing">Upgrade</Link>
@@ -78,7 +77,7 @@ export default function GeneratorPage() {
         });
         return;
       }
-      if (userData.plan !== 'Pro' && userData.dailyImageCredits < numberOfImages) {
+      if (userData.plan !== 'Pro' && userData.dailyImageCredits < 1) {
         toast({
           variant: 'destructive',
           title: 'Daily limit reached',
@@ -100,7 +99,6 @@ export default function GeneratorPage() {
                 prompt,
                 style,
                 aspectRatio,
-                numberOfImages,
                 referenceImages,
                 userId: user?.uid,
             }),
@@ -120,7 +118,7 @@ export default function GeneratorPage() {
         setGeneratedImages(result.images);
         
         if (user && userData && userData.plan !== 'Pro') {
-            await updateImageCount(user.uid, numberOfImages);
+            await updateImageCount(user.uid, 1);
         }
 
       } catch (error: any) {
@@ -137,12 +135,6 @@ export default function GeneratorPage() {
   const handleAspectRatioChange = (value: string) => {
     if (value) {
       setAspectRatio(value);
-    }
-  };
-  
-  const handleImageCountChange = (value: string) => {
-    if (value) {
-      setNumberOfImages(Number(value));
     }
   };
 
@@ -352,7 +344,7 @@ export default function GeneratorPage() {
                   </Button>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex flex-col gap-2">
                      <Label>Style</Label>
                      <Select value={style} onValueChange={setStyle} disabled={isPending}>
@@ -378,34 +370,22 @@ export default function GeneratorPage() {
                       ))}
                     </ToggleGroup>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <Label>Number of Images</Label>
-                    <ToggleGroup type="single" value={String(numberOfImages)} onValueChange={handleImageCountChange} disabled={isPending} className="w-full grid grid-cols-4 gap-2">
-                      {IMAGE_COUNTS.map((c) => (
-                        <ToggleGroupItem key={c.value} value={String(c.value)} className="h-11 rounded-lg shadow-sm data-[state=on]:border-primary data-[state=on]:border-2">
-                          {c.label}
-                        </ToggleGroupItem>
-                      ))}
-                    </ToggleGroup>
-                  </div>
                 </div>
               </div>
               <div className="mt-8">
                 {isGenerating && (
-                  <div className={`grid gap-4 ${numberOfImages > 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
-                     {Array.from({ length: numberOfImages }).map((_, i) => (
-                      <Card key={i} className="w-full bg-card border-border/80 flex items-center justify-center overflow-hidden" style={{aspectRatio: aspectRatio.replace(':', ' / ')}}>
+                  <div className="grid grid-cols-1">
+                      <Card className="w-full bg-card border-border/80 flex items-center justify-center overflow-hidden" style={{aspectRatio: aspectRatio.replace(':', ' / ')}}>
                         <CardContent className="p-0 h-full w-full relative">
                            <Skeleton className="h-full w-full" />
                         </CardContent>
                       </Card>
-                     ))}
                   </div>
                 )}
 
                 {!isGenerating && generatedImages.length > 0 && (
                     <motion.div 
-                        className={`grid gap-4 ${generatedImages.length > 1 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}
+                        className="grid grid-cols-1"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ staggerChildren: 0.1 }}
@@ -451,7 +431,7 @@ export default function GeneratorPage() {
                     <CardContent className="p-0 h-full w-full relative">
                       <div className="text-center text-muted-foreground p-8 flex flex-col items-center justify-center h-full">
                           <ImageIcon className="h-16 w-16 mx-auto mb-4 text-primary/30" />
-                        <h3 className="text-xl font-semibold">Your images will appear here</h3>
+                        <h3 className="text-xl font-semibold">Your image will appear here</h3>
                         <p className="text-base">Enter a prompt and select your options to get started.</p>
                       </div>
                     </CardContent>

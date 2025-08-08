@@ -27,13 +27,6 @@ const GenerateImageInputSchema = z.object({
     .string()
     .optional()
     .describe('The aspect ratio of the image to generate.'),
-  numberOfImages: z
-    .number()
-    .min(1)
-    .max(4)
-    .optional()
-    .default(1)
-    .describe('The number of images to generate.'),
   referenceImages: z
     .array(
       z
@@ -122,35 +115,29 @@ const generateImageFlow = ai.defineFlow(
     
     const quality = getQualityForPlan(input.plan || 'Free');
 
-    const generationPromises = Array.from({
-      length: input.numberOfImages || 1,
-    }).map(async () => {
-      const {media} = await userAi.generate({
-        model: 'googleai/gemini-2.0-flash-preview-image-generation',
-        prompt: promptPayload,
-        config: {
-          responseModalities: ['TEXT', 'IMAGE'],
-          quality,
-          safetySettings: [
-            {
-              category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-              threshold: 'BLOCK_NONE',
-            },
-            {
-              category: 'HARM_CATEGORY_HARASSMENT',
-              threshold: 'BLOCK_NONE',
-            },
-          ],
-        },
-      });
-      if (!media) {
-        throw new Error('Image generation failed to return media.');
-      }
-      return media.url!;
+    const {media} = await userAi.generate({
+      model: 'googleai/gemini-2.0-flash-preview-image-generation',
+      prompt: promptPayload,
+      config: {
+        responseModalities: ['TEXT', 'IMAGE'],
+        quality,
+        safetySettings: [
+          {
+            category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+            threshold: 'BLOCK_NONE',
+          },
+          {
+            category: 'HARM_CATEGORY_HARASSMENT',
+            threshold: 'BLOCK_NONE',
+          },
+        ],
+      },
     });
 
-    const images = await Promise.all(generationPromises);
+    if (!media) {
+      throw new Error('Image generation failed to return media.');
+    }
     
-    return {images};
+    return { images: [media.url!] };
   }
 );
