@@ -37,7 +37,7 @@ const improvePromptFlow = ai.defineFlow(
   },
   async ({ prompt }) => {
     const {text} = await ai.generate({
-      prompt: `Rewrite and improve the following image generation prompt to be more vivid, descriptive, and detailed. Add specific visual elements, lighting conditions, and artistic composition details. Return only the improved prompt, without any extra text or quotation marks.
+      prompt: `Rewrite and improve the following image generation prompt to be more vivid, descriptive, and detailed. Add specific visual elements, lighting conditions, and artistic composition details. Do not specify any particular artistic style (e.g., "photorealistic," "anime," "watercolor"). Focus only on the subject and scene. Return only the improved prompt, without any extra text or quotation marks.
       
       Original prompt: "${prompt}"`,
       model: 'googleai/gemini-2.0-flash',
