@@ -48,9 +48,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Create profile for new user
       await createUserProfile(user, displayName);
       userProfile = await getUserProfile(user.uid);
-    } else if (!userProfile.plan || !userProfile.hasOwnProperty('monthlyImageCredits') || !userProfile.hasOwnProperty('dailyImageCredits')) {
+    } else if (!userProfile.plan || !userProfile.hasOwnProperty('monthlyImageCredits') || !userProfile.hasOwnProperty('dailyImageCredits') || !userProfile.hasOwnProperty('apiKey')) {
       // Backfill old users with new fields
-      await updateUserProfileFields(user.uid, userProfile.plan || 'Free');
+      await updateUserProfileFields(user.uid, userProfile.plan || 'Free', userProfile.displayName);
       userProfile = await getUserProfile(user.uid);
     }
     return userProfile;

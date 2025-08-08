@@ -50,7 +50,7 @@ export const createUserProfile = async (user: User, displayName?: string | null)
 };
 
 // Backfill missing fields for an existing user
-export const updateUserProfileFields = async (uid: string, plan: UserProfile['plan']): Promise<void> => {
+export const updateUserProfileFields = async (uid: string, plan: UserProfile['plan'], displayName?: string | null): Promise<void> => {
     const userRef = doc(db, 'users', uid);
     const monthlyRenewalDate = new Date();
     monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
@@ -58,11 +58,13 @@ export const updateUserProfileFields = async (uid: string, plan: UserProfile['pl
 
     const defaultFields = {
         plan: plan,
+        displayName: displayName || null,
         monthlyImageCredits: credits.monthly,
         monthlyPlanRenewalDate: Timestamp.fromDate(monthlyRenewalDate),
         dailyImageCredits: credits.daily,
         lastDailyReset: Timestamp.now(),
         updatedAt: serverTimestamp(),
+        apiKey: null,
     };
     await setDoc(userRef, defaultFields, { merge: true });
 }
