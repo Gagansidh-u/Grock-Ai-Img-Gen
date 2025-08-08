@@ -87,6 +87,7 @@ export default function GeneratorPage() {
                 numberOfImages,
                 referenceImages,
                 userId: user?.uid,
+                plan: userData?.plan || 'Free',
             }),
         });
 

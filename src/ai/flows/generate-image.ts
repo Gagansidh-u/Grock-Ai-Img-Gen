@@ -13,6 +13,7 @@ config();
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import {STYLES} from '@/lib/options';
+import type { UserProfile } from '@/lib/firestore';
 
 const GenerateImageInputSchema = z.object({
   prompt: z.string().describe('The text prompt to use to generate the image.'),
@@ -42,6 +43,7 @@ const GenerateImageInputSchema = z.object({
     .optional()
     .describe('An array of reference image data URIs.'),
   userId: z.string().optional().describe('The ID of the user generating the image.'),
+  plan: z.enum(['Free', 'Basic', 'Standard', 'Pro']).optional().default('Free').describe('The user\'s subscription plan.'),
 });
 export type GenerateImageInput = z.infer<typeof GenerateImageInputSchema>;
 
@@ -60,6 +62,15 @@ export async function generateImage(
   input: GenerateImageInput
 ): Promise<GenerateImageOutput> {
   return generateImageFlow(input);
+}
+
+const getQualityForPlan = (plan: UserProfile['plan']) => {
+    switch (plan) {
+        case 'Pro': return '4k';
+        case 'Standard': return '2k';
+        case 'Basic': return 'hd';
+        default: return 'standard';
+    }
 }
 
 const generateImageFlow = ai.defineFlow(
@@ -96,7 +107,8 @@ const generateImageFlow = ai.defineFlow(
     if (promptPayload.length === 0) {
         throw new Error("A prompt or reference image is required.");
     }
-
+    
+    const quality = getQualityForPlan(input.plan || 'Free');
 
     const generationPromises = Array.from({
       length: input.numberOfImages || 1,
@@ -106,6 +118,7 @@ const generateImageFlow = ai.defineFlow(
         prompt: promptPayload,
         config: {
           responseModalities: ['TEXT', 'IMAGE'],
+          quality,
           safetySettings: [
             {
               category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
