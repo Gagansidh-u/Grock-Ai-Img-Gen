@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useTransition, useCallback } from 'react';
@@ -27,7 +26,6 @@ import { CreditUsage } from '@/components/credit-usage';
 import { Header } from '@/components/header';
 import { updateImageCount } from '@/lib/firestore';
 import { AuthDialog } from '@/components/auth-dialog';
-import { ActivationDialog } from '@/components/activation-dialog';
 
 export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
@@ -38,7 +36,6 @@ export default function GeneratorPage() {
   const [isGenerating, startGenerationTransition] = useTransition();
   const [isImproving, startImprovingTransition] = useTransition();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const [isActivationDialogOpen, setIsActivationDialogOpen] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
   const { userData } = useUserData();
@@ -47,11 +44,6 @@ export default function GeneratorPage() {
     if (!user) {
         setIsAuthDialogOpen(true);
         return;
-    }
-
-    if (userData?.apiKeyNumber === 0) {
-      setIsActivationDialogOpen(true);
-      return;
     }
 
     if (!prompt.trim() && referenceImages.length === 0) {
@@ -144,11 +136,6 @@ export default function GeneratorPage() {
         return;
     }
     
-    if (userData?.apiKeyNumber === 0) {
-      setIsActivationDialogOpen(true);
-      return;
-    }
-
     if (!prompt.trim()) {
       toast({
         variant: 'destructive',
@@ -159,7 +146,7 @@ export default function GeneratorPage() {
     }
     startImprovingTransition(async () => {
       try {
-        const result = await improvePrompt({ prompt, apiKeyNumber: userData?.apiKeyNumber });
+        const result = await improvePrompt({ prompt });
         setPrompt(result.prompt);
       } catch (error: any) {
         console.error('Prompt improvement failed:', error);
@@ -444,7 +431,6 @@ export default function GeneratorPage() {
       </SidebarInset>
     </SidebarProvider>
     <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
-    <ActivationDialog open={isActivationDialogOpen} onOpenChange={setIsActivationDialogOpen} />
     </>
   );
 }

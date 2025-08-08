@@ -1,4 +1,3 @@
-
 // src/app/api/generate/route.ts
 import { generateImage, GenerateImageInput } from '@/ai/flows/generate-image';
 import { getUserProfile } from '@/lib/firestore';
@@ -6,9 +5,8 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as Omit<GenerateImageInput, 'plan' | 'apiKeyNumber'>;
+    const body = (await request.json()) as Omit<GenerateImageInput, 'plan'> & { userId: string };
     
-    // Ensure the input is valid before passing to the flow
     if (!body.prompt && (!body.referenceImages || body.referenceImages.length === 0)) {
         return NextResponse.json({ error: 'A prompt or reference image is required.' }, { status: 400 });
     }
@@ -23,14 +21,9 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'User profile not found.' }, { status: 404 });
     }
 
-    if (userProfile.apiKeyNumber === 0) {
-      return NextResponse.json({ error: 'API key not configured for this user. Please add it in your profile.' }, { status: 403 });
-    }
-
     const result = await generateImage({
       ...body,
       plan: userProfile.plan,
-      apiKeyNumber: userProfile.apiKeyNumber,
     });
 
     return NextResponse.json(result);

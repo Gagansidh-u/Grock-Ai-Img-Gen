@@ -1,4 +1,3 @@
-
 // src/lib/firestore.ts
 import { db } from './firebase';
 import { doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, Timestamp } from 'firebase/firestore';
@@ -15,7 +14,6 @@ export interface UserProfile {
   lastDailyReset: Timestamp;
   createdAt: any;
   updatedAt: any;
-  apiKeyNumber: number;
 }
 
 export const getCreditsForPlan = (plan: UserProfile['plan']) => {
@@ -34,7 +32,7 @@ export const createUserProfile = async (user: User, displayName?: string | null)
   monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
   const credits = getCreditsForPlan('Free');
 
-  const userProfile: UserProfile = {
+  const userProfile: Omit<UserProfile, 'createdAt' | 'updatedAt'> = {
     uid: user.uid,
     email: user.email,
     displayName: displayName || user.displayName,
@@ -43,11 +41,12 @@ export const createUserProfile = async (user: User, displayName?: string | null)
     monthlyPlanRenewalDate: Timestamp.fromDate(monthlyRenewalDate),
     dailyImageCredits: credits.daily,
     lastDailyReset: Timestamp.now(),
+  };
+  await setDoc(userRef, {
+    ...userProfile,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    apiKeyNumber: 0,
-  };
-  await setDoc(userRef, userProfile);
+  });
 };
 
 // Backfill missing fields for an existing user
@@ -75,11 +74,9 @@ export const updateUserProfileFields = async (uid: string, plan: UserProfile['pl
         updates.displayName = displayName;
     }
 
-    if (!existingData || !existingData.hasOwnProperty('apiKeyNumber') || existingData.apiKeyNumber === null) {
-        updates.apiKeyNumber = 0;
+    if (Object.keys(updates).length > 1) {
+      await setDoc(userRef, updates, { merge: true });
     }
-
-    await setDoc(userRef, updates, { merge: true });
 }
 
 
