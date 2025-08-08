@@ -14,7 +14,7 @@ export interface UserProfile {
   lastDailyReset: Timestamp;
   createdAt: any;
   updatedAt: any;
-  apiKey?: string | null;
+  apiKeyNumber: number | null;
 }
 
 export const getCreditsForPlan = (plan: UserProfile['plan']) => {
@@ -44,7 +44,7 @@ export const createUserProfile = async (user: User, displayName?: string | null)
     lastDailyReset: Timestamp.now(),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    apiKey: null, // Initialize apiKey as null
+    apiKeyNumber: null,
   };
   await setDoc(userRef, userProfile);
 };
@@ -52,22 +52,35 @@ export const createUserProfile = async (user: User, displayName?: string | null)
 // Backfill missing fields for an existing user
 export const updateUserProfileFields = async (uid: string, plan: UserProfile['plan'], displayName?: string | null): Promise<void> => {
     const userRef = doc(db, 'users', uid);
-    const monthlyRenewalDate = new Date();
-    monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
-    const credits = getCreditsForPlan(plan);
+    const docSnap = await getDoc(userRef);
+    const existingData = docSnap.data() as UserProfile | undefined;
 
-    const defaultFields = {
-        plan: plan,
-        displayName: displayName || null,
-        monthlyImageCredits: credits.monthly,
-        monthlyPlanRenewalDate: Timestamp.fromDate(monthlyRenewalDate),
-        dailyImageCredits: credits.daily,
-        lastDailyReset: Timestamp.now(),
+    const updates: Partial<UserProfile> = {
         updatedAt: serverTimestamp(),
-        apiKey: null,
     };
-    await setDoc(userRef, defaultFields, { merge: true });
+
+    if (!existingData || !existingData.plan) {
+        const credits = getCreditsForPlan(plan);
+        const monthlyRenewalDate = new Date();
+        monthlyRenewalDate.setMonth(monthlyRenewalDate.getMonth() + 1);
+        updates.plan = plan;
+        updates.monthlyImageCredits = credits.monthly;
+        updates.monthlyPlanRenewalDate = Timestamp.fromDate(monthlyRenewalDate);
+        updates.dailyImageCredits = credits.daily;
+        updates.lastDailyReset = Timestamp.now();
+    }
+    
+    if (displayName && (!existingData || !existingData.displayName)) {
+        updates.displayName = displayName;
+    }
+
+    if (!existingData || !existingData.hasOwnProperty('apiKeyNumber')) {
+        updates.apiKeyNumber = null;
+    }
+
+    await setDoc(userRef, updates, { merge: true });
 }
+
 
 // Get a user profile from Firestore
 export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {

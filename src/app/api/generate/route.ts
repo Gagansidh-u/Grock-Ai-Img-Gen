@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as Omit<GenerateImageInput, 'plan' | 'userApiKey'>;
+    const body = (await request.json()) as Omit<GenerateImageInput, 'plan' | 'apiKeyNumber'>;
     
     // Ensure the input is valid before passing to the flow
     if (!body.prompt && (!body.referenceImages || body.referenceImages.length === 0)) {
@@ -22,14 +22,14 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'User profile not found.' }, { status: 404 });
     }
 
-    if (!userProfile.apiKey) {
+    if (userProfile.apiKeyNumber === null) {
       return NextResponse.json({ error: 'API key not configured for this user. Please add it in your profile.' }, { status: 403 });
     }
 
     const result = await generateImage({
       ...body,
       plan: userProfile.plan,
-      userApiKey: userProfile.apiKey,
+      apiKeyNumber: userProfile.apiKeyNumber,
     });
 
     return NextResponse.json(result);

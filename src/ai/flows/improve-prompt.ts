@@ -14,10 +14,11 @@ import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/googleai';
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { getApiKey, getFallbackApiKey } from '@/lib/api-keys';
 
 const ImprovePromptInputSchema = z.object({
   prompt: z.string().describe('The user-provided prompt to improve.'),
-  userApiKey: z.string().optional().describe('The user-specific API key for Gemini.'),
+  apiKeyNumber: z.number().nullable().optional().describe('The assigned API key number for the user.'),
 });
 
 export type ImprovePromptInput = z.infer<typeof ImprovePromptInputSchema>;
@@ -38,11 +39,15 @@ const improvePromptFlow = ai.defineFlow(
     inputSchema: ImprovePromptInputSchema,
     outputSchema: ImprovePromptOutputSchema,
   },
-  async ({ prompt, userApiKey }) => {
+  async ({ prompt, apiKeyNumber }) => {
+    const userApiKey = getApiKey(apiKeyNumber || null) || getFallbackApiKey();
+
+    if (!userApiKey) {
+      throw new Error("No API key available to improve prompt.");
+    }
+    
     // Use user-specific AI instance if key is provided, otherwise fall back to global instance.
-    const activeAi = userApiKey 
-        ? genkit({ plugins: [googleAI({ apiKey: userApiKey })] })
-        : ai;
+    const activeAi = genkit({ plugins: [googleAI({ apiKey: userApiKey })] });
 
     const {text} = await activeAi.generate({
       prompt: `Rewrite and improve the following image generation prompt to be more vivid, descriptive, and detailed. Add specific visual elements, lighting conditions, and artistic composition details. Do not specify any particular artistic style (e.g., "photorealistic," "anime," "watercolor"). Focus only on the subject and scene. Return only the improved prompt, without any extra text or quotation marks.

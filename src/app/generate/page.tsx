@@ -48,7 +48,7 @@ export default function GeneratorPage() {
         return;
     }
 
-    if (!userData?.apiKey) {
+    if (userData?.apiKeyNumber === null) {
       setIsActivationDialogOpen(true);
       return;
     }
@@ -143,7 +143,7 @@ export default function GeneratorPage() {
         return;
     }
     
-    if (!userData?.apiKey) {
+    if (userData?.apiKeyNumber === null) {
       setIsActivationDialogOpen(true);
       return;
     }
@@ -158,7 +158,7 @@ export default function GeneratorPage() {
     }
     startImprovingTransition(async () => {
       try {
-        const result = await improvePrompt({ prompt, userApiKey: userData.apiKey });
+        const result = await improvePrompt({ prompt, apiKeyNumber: userData?.apiKeyNumber });
         setPrompt(result.prompt);
       } catch (error: any) {
         console.error('Prompt improvement failed:', error);

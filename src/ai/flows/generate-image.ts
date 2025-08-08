@@ -16,6 +16,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import {STYLES} from '@/lib/options';
 import type { UserProfile } from '@/lib/firestore';
+import { getApiKey } from '@/lib/api-keys';
 
 const GenerateImageInputSchema = z.object({
   prompt: z.string().describe('The text prompt to use to generate the image.'),
@@ -39,7 +40,7 @@ const GenerateImageInputSchema = z.object({
     .describe('An array of reference image data URIs.'),
   userId: z.string().optional().describe('The ID of the user generating the image.'),
   plan: z.enum(['Free', 'Basic', 'Standard', 'Pro']).optional().default('Free').describe('The user\'s subscription plan.'),
-  userApiKey: z.string().optional().describe('The user-specific API key for Gemini.'),
+  apiKeyNumber: z.number().nullable().optional().describe('The assigned API key number for the user.'),
 });
 export type GenerateImageInput = z.infer<typeof GenerateImageInputSchema>;
 
@@ -76,12 +77,14 @@ const generateImageFlow = ai.defineFlow(
     outputSchema: GenerateImageOutputSchema,
   },
   async (input) => {
-    if (!input.userApiKey) {
-        throw new Error('An API key is required for image generation.');
+    const userApiKey = getApiKey(input.apiKeyNumber || null);
+    
+    if (!userApiKey) {
+        throw new Error('An API key is required for image generation. The user may not be activated yet.');
     }
     
     const userAi = genkit({
-      plugins: [googleAI({ apiKey: input.userApiKey })],
+      plugins: [googleAI({ apiKey: userApiKey })],
     });
 
     const styleInfo = STYLES.find((s) => s.value === input.style);
