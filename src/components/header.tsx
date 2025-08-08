@@ -12,9 +12,7 @@ export function Header() {
           <div className="flex items-center gap-3">
             <SidebarTrigger className="md:hidden" />
             <Link href="/" className="flex items-center gap-3">
-              <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={32} height={32} className="text-primary" />
-              </div>
+              <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={38} height={38} />
               <h1 className="text-2xl font-bold text-foreground tracking-tighter">
                 TryQuad AI
               </h1>

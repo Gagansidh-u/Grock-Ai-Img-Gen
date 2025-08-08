@@ -22,7 +22,7 @@ export function Invoice(props: InvoiceData) {
             <div className="flex justify-between items-start">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={32} height={32} className="text-primary"/>
+                        <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={33} height={32} />
                         <h1 className="text-2xl font-bold">TryQuad AI</h1>
                     </div>
                     <CardDescription>Invoice for your purchase</CardDescription>
