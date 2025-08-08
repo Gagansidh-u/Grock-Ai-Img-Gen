@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { generateImage } from '@/ai/flows/generate-image';
 import { suggestPrompt } from '@/ai/flows/suggest-prompt';
 import { useToast } from '@/hooks/use-toast';
 import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X, Home, Gem, ShieldAlert } from 'lucide-react';
@@ -76,27 +75,39 @@ export default function GeneratorPage() {
     startGenerationTransition(async () => {
       try {
         setGeneratedImages([]);
-        const result = await generateImage({ 
-            prompt, 
-            style, 
-            aspectRatio, 
-            numberOfImages, 
-            referenceImages, 
-            userId: user?.uid 
+        const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                prompt,
+                style,
+                aspectRatio,
+                numberOfImages,
+                referenceImages,
+                userId: user?.uid,
+            }),
         });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to generate image');
+        }
+
+        const result = await response.json();
         setGeneratedImages(result.images);
         
         if (user && userData && userData.plan !== 'Pro') {
             await updateImageCount(user.uid, numberOfImages);
         }
 
-      } catch (error) {
+      } catch (error: any) {
         console.error('Image generation failed:', error);
         toast({
           variant: 'destructive',
           title: 'Oh no! Something went wrong.',
-          description:
-            'There was a problem generating the image. Please try again later or check the console for details.',
+          description: error.message || 'There was a problem generating the image. Please try again later.',
         });
       }
     });
@@ -419,5 +430,3 @@ export default function GeneratorPage() {
     </>
   );
 }
-
-    
