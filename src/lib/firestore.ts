@@ -14,7 +14,7 @@ export interface UserProfile {
   lastDailyReset: Timestamp;
   createdAt: any;
   updatedAt: any;
-  apiKey?: string;
+  apiKey?: string | null;
 }
 
 export const getCreditsForPlan = (plan: UserProfile['plan']) => {
@@ -44,6 +44,7 @@ export const createUserProfile = async (user: User, displayName?: string | null)
     lastDailyReset: Timestamp.now(),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
+    apiKey: null, // Initialize apiKey as null
   };
   await setDoc(userRef, userProfile);
 };

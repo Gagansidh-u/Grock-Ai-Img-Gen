@@ -94,7 +94,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await updateProfile(result.user, {
         displayName: credentials.name
       })
-      await handleUserVerification(result.user, credentials.name);
+      // Manually update the user object after profile update
+      const updatedUser = { ...result.user, displayName: credentials.name };
+      await handleUserVerification(updatedUser, credentials.name);
     } catch (error: any) {
        console.error("Error signing up: ", error);
        toast({
@@ -155,5 +157,3 @@ export const useAuth = (): AuthContextType => {
   }
   return context;
 };
-
-    
