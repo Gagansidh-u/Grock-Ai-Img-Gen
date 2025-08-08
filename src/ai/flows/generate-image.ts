@@ -80,7 +80,6 @@ const generateImageFlow = ai.defineFlow(
         throw new Error('An API key is required for image generation.');
     }
     
-    // Create a temporary, request-specific Genkit instance with the user's API key.
     const userAi = genkit({
       plugins: [googleAI({ apiKey: input.userApiKey })],
     });

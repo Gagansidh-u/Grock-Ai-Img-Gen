@@ -10,11 +10,14 @@
 import { config } from 'dotenv';
 config();
 
+import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const ImprovePromptInputSchema = z.object({
   prompt: z.string().describe('The user-provided prompt to improve.'),
+  userApiKey: z.string().optional().describe('The user-specific API key for Gemini.'),
 });
 
 export type ImprovePromptInput = z.infer<typeof ImprovePromptInputSchema>;
@@ -35,8 +38,13 @@ const improvePromptFlow = ai.defineFlow(
     inputSchema: ImprovePromptInputSchema,
     outputSchema: ImprovePromptOutputSchema,
   },
-  async ({ prompt }) => {
-    const {text} = await ai.generate({
+  async ({ prompt, userApiKey }) => {
+    // Use user-specific AI instance if key is provided, otherwise fall back to global instance.
+    const activeAi = userApiKey 
+        ? genkit({ plugins: [googleAI({ apiKey: userApiKey })] })
+        : ai;
+
+    const {text} = await activeAi.generate({
       prompt: `Rewrite and improve the following image generation prompt to be more vivid, descriptive, and detailed. Add specific visual elements, lighting conditions, and artistic composition details. Do not specify any particular artistic style (e.g., "photorealistic," "anime," "watercolor"). Focus only on the subject and scene. Return only the improved prompt, without any extra text or quotation marks.
       
       Original prompt: "${prompt}"`,

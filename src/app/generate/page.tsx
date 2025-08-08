@@ -158,14 +158,14 @@ export default function GeneratorPage() {
     }
     startImprovingTransition(async () => {
       try {
-        const result = await improvePrompt({ prompt });
+        const result = await improvePrompt({ prompt, userApiKey: userData.apiKey });
         setPrompt(result.prompt);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Prompt improvement failed:', error);
         toast({
           variant: 'destructive',
           title: 'Improvement failed',
-          description: 'Could not improve the prompt at this time.',
+          description: error.message || 'Could not improve the prompt at this time.',
         });
       }
     });
