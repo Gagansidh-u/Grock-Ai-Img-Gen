@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { suggestPrompt } from '@/ai/flows/suggest-prompt';
+import { improvePrompt } from '@/ai/flows/improve-prompt';
 import { useToast } from '@/hooks/use-toast';
 import { Wand2, Download, Image as ImageIcon, Sparkles, Loader2, Upload, X, Home, Gem, ShieldAlert } from 'lucide-react';
 import { STYLES, ASPECT_RATIOS, IMAGE_COUNTS } from '@/lib/options';
@@ -35,7 +36,7 @@ export default function GeneratorPage() {
   const [referenceImages, setReferenceImages] = useState<string[]>([]);
   const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [isGenerating, startGenerationTransition] = useTransition();
-  const [isSuggesting, startSuggestionTransition] = useTransition();
+  const [isImproving, startImprovingTransition] = useTransition();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -126,17 +127,25 @@ export default function GeneratorPage() {
     }
   };
 
-  const handleSuggestPrompt = () => {
-    startSuggestionTransition(async () => {
+  const handleImprovePrompt = () => {
+    if (!prompt.trim()) {
+      toast({
+        variant: 'destructive',
+        title: 'Prompt is empty',
+        description: 'Please enter a prompt to improve.',
+      });
+      return;
+    }
+    startImprovingTransition(async () => {
       try {
-        const result = await suggestPrompt();
+        const result = await improvePrompt({ prompt });
         setPrompt(result.prompt);
       } catch (error) {
-        console.error('Prompt suggestion failed:', error);
+        console.error('Prompt improvement failed:', error);
         toast({
           variant: 'destructive',
-          title: 'Suggestion failed',
-          description: 'Could not generate a prompt suggestion at this time.',
+          title: 'Improvement failed',
+          description: 'Could not improve the prompt at this time.',
         });
       }
     });
@@ -176,7 +185,7 @@ export default function GeneratorPage() {
     }
   };
 
-  const isPending = isGenerating || isSuggesting;
+  const isPending = isGenerating || isImproving;
   const promptRows = prompt.split('\n').length;
   const showSmallUploadButton = promptRows <= 2;
   const hasReferenceImages = referenceImages.length > 0;
@@ -299,9 +308,9 @@ export default function GeneratorPage() {
                 </div>
                 
                 <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-                  <Button variant="ghost" size="lg" onClick={handleSuggestPrompt} disabled={isPending} className="group rounded-full w-full sm:w-auto">
-                    {isSuggesting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Wand2 className="h-5 w-5 mr-2 text-muted-foreground group-hover:text-primary transition-colors" />}
-                    Inspire Me
+                  <Button variant="ghost" size="lg" onClick={handleImprovePrompt} disabled={isPending || !prompt.trim()} className="group rounded-full w-full sm:w-auto">
+                    {isImproving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Wand2 className="h-5 w-5 mr-2 text-muted-foreground group-hover:text-primary transition-colors" />}
+                    Improve Prompt
                   </Button>
                   <Button
                     onClick={handleGenerate}
