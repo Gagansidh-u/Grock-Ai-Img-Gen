@@ -16,11 +16,19 @@ export async function createOrder(input: z.infer<typeof CreateOrderSchema>) {
   }
 
   const { amount, currency } = validatedInput.data;
+  
+  const key_id = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+
+  if (!key_id || !key_secret) {
+    throw new Error("Razorpay API keys are not configured. Please check your environment variables.");
+  }
+
 
   try {
     const instance = new Razorpay({
-      key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-      key_secret: process.env.RAZORPAY_KEY_SECRET,
+      key_id,
+      key_secret,
     });
 
     const options = {
