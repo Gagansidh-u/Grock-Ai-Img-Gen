@@ -39,7 +39,7 @@ export default function LandingPage() {
         <SidebarHeader>
           <Link href="/" className="flex items-center gap-3">
               <div className="p-1.5 bg-primary/10 border border-primary/20 rounded-lg">
-                <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={28} height={28} className="text-primary" />
+                <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={32} height={32} className="text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground tracking-tighter">
                 TryQuad AI
@@ -186,7 +186,7 @@ export default function LandingPage() {
           <footer className="border-t border-border/50 py-8">
             <div className="container mx-auto px-4 text-center">
                 <div className="flex items-center justify-center gap-2 mb-4">
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={24} height={24} className="text-primary"/>
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={28} height={28} className="text-primary"/>
                      <p className="text-lg font-semibold">TryQuad AI</p>
                 </div>
               <div className="flex flex-wrap justify-center gap-4 mb-4">
@@ -219,3 +219,5 @@ export default function LandingPage() {
     </SidebarProvider>
   );
 }
+
+    
