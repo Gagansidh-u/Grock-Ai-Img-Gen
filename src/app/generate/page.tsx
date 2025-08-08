@@ -94,7 +94,12 @@ export default function GeneratorPage() {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to generate image. Please try again later.');
+            toast({
+              variant: 'destructive',
+              title: 'Oh no! Something went wrong.',
+              description: errorData.error || 'There was a problem generating the image. Please try again later.',
+            });
+            return;
         }
 
         const result = await response.json();
@@ -438,3 +443,5 @@ export default function GeneratorPage() {
     </>
   );
 }
+
+    
