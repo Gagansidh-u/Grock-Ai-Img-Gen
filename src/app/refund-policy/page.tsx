@@ -139,7 +139,7 @@ export default function RefundPolicyPage() {
           <footer className="border-t border-border/50 py-8">
             <div className="container mx-auto px-4 text-center">
                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={33} height={32} />
+                    <Image src="https://raw.githubusercontent.com/Gagansidh-u/Images/main/logo2.png" alt="Logo" width={33} height={33} />
                      <p className="text-lg font-semibold">TryQuad AI</p>
                 </div>
               <p className="text-muted-foreground">
