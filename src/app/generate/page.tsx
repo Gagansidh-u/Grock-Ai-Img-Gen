@@ -94,7 +94,7 @@ export default function GeneratorPage() {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to generate image');
+            throw new Error(errorData.error || 'Failed to generate image. Please try again later.');
         }
 
         const result = await response.json();
@@ -438,5 +438,3 @@ export default function GeneratorPage() {
     </>
   );
 }
-
-    
