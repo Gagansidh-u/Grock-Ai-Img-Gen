@@ -10,12 +10,9 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 import {STYLES} from '@/lib/options';
 import type { UserProfile } from '@/lib/firestore';
-import { getApiKey } from '@/lib/api-keys';
 
 const GenerateImageInputSchema = z.object({
   prompt: z.string().describe('The text prompt to use to generate the image.'),
@@ -38,7 +35,6 @@ const GenerateImageInputSchema = z.object({
     .optional()
     .describe('An array of reference image data URIs.'),
   plan: z.enum(['Free', 'Basic', 'Standard', 'Pro']).optional().default('Free').describe('The user\'s subscription plan.'),
-  apiKeyNumber: z.number().optional().describe("The user's assigned API key number."),
 });
 export type GenerateImageInput = z.infer<typeof GenerateImageInputSchema>;
 
@@ -75,17 +71,6 @@ const generateImageFlow = ai.defineFlow(
     outputSchema: GenerateImageOutputSchema,
   },
   async (input) => {
-    
-    const userApiKey = getApiKey(input.apiKeyNumber);
-    if (!userApiKey) {
-        throw new Error('User API key is not configured or assigned.');
-    }
-    
-    // Create a temporary, user-specific AI instance
-    const userAi = genkit({
-      plugins: [googleAI({ apiKey: userApiKey })],
-    });
-    
     const styleInfo = STYLES.find((s) => s.value === input.style);
     const stylePrompt = styleInfo ? styleInfo.prompt : '';
     
@@ -116,7 +101,7 @@ const generateImageFlow = ai.defineFlow(
     
     const quality = getQualityForPlan(input.plan || 'Free');
 
-    const {media} = await userAi.generate({
+    const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
       prompt: promptPayload,
       config: {
