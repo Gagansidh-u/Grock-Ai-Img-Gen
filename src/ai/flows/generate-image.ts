@@ -8,8 +8,6 @@
  * - GenerateImageInput - The input type for the generateImage function.
  * - GenerateImageOutput - The return type for the generateImage function.
  */
-import { config } from 'dotenv';
-config();
 
 import {ai} from '@/ai/genkit';
 import {genkit} from 'genkit';

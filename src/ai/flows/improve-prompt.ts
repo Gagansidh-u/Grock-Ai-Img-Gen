@@ -6,8 +6,6 @@
  * - ImprovePromptInput - The input type for the improvePrompt function.
  * - ImprovePromptOutput - The return type for the improvePrompt function.
  */
-import { config } from 'dotenv';
-config();
 
 import {ai} from '@/ai/genkit';
 import {genkit} from 'genkit';

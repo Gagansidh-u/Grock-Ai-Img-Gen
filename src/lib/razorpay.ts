@@ -1,6 +1,4 @@
 'use server';
-import { config } from 'dotenv';
-config();
 
 import Razorpay from 'razorpay';
 import { z } from 'zod';
