@@ -43,6 +43,7 @@ export const createUserProfile = async (user: User, displayName?: string | null)
     dailyImageCredits: credits.daily,
     lastDailyReset: Timestamp.now(),
   };
+
   await setDoc(userRef, {
     ...userProfile,
     createdAt: serverTimestamp(),
